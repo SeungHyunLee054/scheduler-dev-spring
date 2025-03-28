@@ -27,11 +27,8 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-  jwt:
-    secret: SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKey
-
-    token:
-      expired:
-        second: 60
-        minute: 60
-        hour: 12
+  session:
+    expired:
+      second: 60
+      minute: 60
+      hour: 12

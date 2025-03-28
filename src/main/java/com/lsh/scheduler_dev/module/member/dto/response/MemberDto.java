@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.module.member.dto;
+package com.lsh.scheduler_dev.module.member.dto.response;
 
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import lombok.Builder;
@@ -8,15 +8,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class MemberResponseDto {
+public class MemberDto {
     private Long memberId;
     private String name;
     private String email;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static MemberResponseDto toDto(Member member) {
-        return MemberResponseDto.builder()
+    public static MemberDto toDto(Member member) {
+        return MemberDto.builder()
                 .memberId(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())

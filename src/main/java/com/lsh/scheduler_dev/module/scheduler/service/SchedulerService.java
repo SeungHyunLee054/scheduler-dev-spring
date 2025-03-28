@@ -1,26 +1,29 @@
 package com.lsh.scheduler_dev.module.scheduler.service;
 
+import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
-import com.lsh.scheduler_dev.module.member.repository.MemberRepository;
+import com.lsh.scheduler_dev.module.member.service.MemberService;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
-import com.lsh.scheduler_dev.module.scheduler.dto.SchedulerCreateRequestDto;
-import com.lsh.scheduler_dev.module.scheduler.dto.SchedulerResponseDto;
-import com.lsh.scheduler_dev.module.scheduler.dto.SchedulerUpdateRequestDto;
+import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
+import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
+import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
+import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
+import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.scheduler_dev.module.scheduler.repository.SchedulerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class SchedulerService {
     private final SchedulerRepository schedulerRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
-    public SchedulerResponseDto saveScheduler(Long memberId, SchedulerCreateRequestDto dto) {
-        Member member = memberRepository.findById(memberId).orElse(null);
+    public SchedulerDto saveScheduler(Long memberId, SchedulerCreateDto dto) {
+        Member member = memberService.findById(memberId);
 
         Scheduler savedScheduler = schedulerRepository.save(Scheduler.builder()
                 .member(member)
@@ -28,36 +31,61 @@ public class SchedulerService {
                 .content(dto.getContent())
                 .build());
 
-        return SchedulerResponseDto.toDto(savedScheduler);
+        return SchedulerDto.toDto(savedScheduler);
     }
 
-    public List<SchedulerResponseDto> findAllSchedulers() {
-        return schedulerRepository.findAll().stream().map(SchedulerResponseDto::toDto).collect(Collectors.toList());
+    public ListResponse<SchedulerDto> findAllSchedulers(Pageable pageable) {
+        return ListResponse.toListResponse(schedulerRepository.findAllByOrderByModifiedAtDesc(pageable)
+                .map(SchedulerDto::toDto));
     }
 
-    public SchedulerResponseDto updateScheduler(Long memberId, Long schedulerId, SchedulerUpdateRequestDto dto) {
-        Scheduler scheduler = schedulerRepository.findById(schedulerId).orElse(null);
-        Member member = memberRepository.findById(memberId).orElse(null);
-        if (!scheduler.getMember().getId().equals(member.getId())) {
-            //exception
-        }
+    public SchedulerDto updateScheduler(Long memberId, Long schedulerId, SchedulerUpdateDto schedulerUpdateDto) {
+        Scheduler scheduler = findById(schedulerId);
 
-        scheduler.updateTitle(dto.getTitle());
-        scheduler.updateContent(dto.getContent());
+        Member member = memberService.findById(memberId);
+
+        validate(scheduler, member);
+
+        scheduler.updateTitle(schedulerUpdateDto.getTitle());
+        scheduler.updateContent(schedulerUpdateDto.getContent());
         Scheduler updatedScheduler = schedulerRepository.save(scheduler);
 
-        return SchedulerResponseDto.toDto(updatedScheduler);
+        return SchedulerDto.toDto(updatedScheduler);
     }
 
-    public SchedulerResponseDto deleteScheduler(Long memberId, Long schedulerId) {
-        Scheduler scheduler = schedulerRepository.findById(schedulerId).orElse(null);
-        Member member = memberRepository.findById(memberId).orElse(null);
-        if (!scheduler.getMember().getId().equals(member.getId())) {
-            //exception
-        }
+    public SchedulerDto deleteScheduler(Long memberId, Long schedulerId) {
+        Scheduler scheduler = findById(schedulerId);
+
+
+        Member member = memberService.findById(memberId);
+
+        validate(scheduler, member);
 
         schedulerRepository.delete(scheduler);
 
-        return SchedulerResponseDto.toDto(scheduler);
+        return SchedulerDto.toDto(scheduler);
+    }
+
+    public Scheduler findById(Long schedulerId) {
+        return schedulerRepository.findById(schedulerId)
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
+    }
+
+    public void plusCommentCount(Scheduler scheduler) {
+        scheduler.plusCommentCount();
+
+        schedulerRepository.save(scheduler);
+    }
+
+    public void minusCommentCount(Scheduler scheduler) {
+        scheduler.minusCommentCount();
+
+        schedulerRepository.save(scheduler);
+    }
+
+    private void validate(Scheduler scheduler, Member member) {
+        if (!Objects.equals(scheduler.getMember().getId(), member.getId())) {
+            throw new SchedulerException(SchedulerExceptionCode.USER_MISMATCH);
+        }
     }
 }
