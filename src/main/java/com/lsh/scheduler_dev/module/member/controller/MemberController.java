@@ -61,13 +61,12 @@ public class MemberController {
 
     @DeleteMapping("/{memberId}")
     public ResponseEntity<MemberDto> deleteMember(
-            @PathVariable Long memberId,
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             HttpServletRequest request
     ) {
         request.getSession().removeAttribute(SessionConstants.AUTHORIZATION);
 
-        return ResponseEntity.ok(memberService.removeMember(memberId, memberAuthDto.getMemberId()));
+        return ResponseEntity.ok(memberService.removeMember(memberAuthDto.getMemberId()));
     }
 
 }

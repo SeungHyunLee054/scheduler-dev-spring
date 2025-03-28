@@ -12,6 +12,7 @@ import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.service.MemberService;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.service.SchedulerService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class CommentService {
     private final MemberService memberService;
     private final SchedulerService schedulerService;
 
+    @Transactional
     public CommentDto saveComment(Long schedulerId, Long memberId, CommentCreateDto commentCreateDto) {
         Member member = memberService.findById(memberId);
         Scheduler scheduler = schedulerService.findById(schedulerId);
@@ -44,6 +46,7 @@ public class CommentService {
                         .map(CommentDto::toDto));
     }
 
+    @Transactional
     public CommentDto updateComment(Long commentId, Long memberId, CommentUpdateDto commentUpdateDto) {
         Comment comment = commentRepository.findById(commentId)
                 .filter(c -> c.getMember().getId().equals(memberId))
@@ -51,11 +54,10 @@ public class CommentService {
 
         comment.updateContent(commentUpdateDto.getContent());
 
-        Comment savedComment = commentRepository.save(comment);
-
-        return CommentDto.toDto(savedComment);
+        return CommentDto.toDto(comment);
     }
 
+    @Transactional
     public CommentDto deleteComment(Long commentId, Long memberId) {
         Comment comment = commentRepository.findById(commentId)
                 .filter(c -> c.getMember().getId().equals(memberId))

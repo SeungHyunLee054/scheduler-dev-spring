@@ -36,11 +36,8 @@ public class Scheduler extends BaseEntity {
     @OneToMany(mappedBy = "scheduler", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public void updateTitle(String title) {
+    public void updateScheduler(String title, String content) {
         this.title = title;
-    }
-
-    public void updateContent(String content) {
         this.content = content;
     }
 

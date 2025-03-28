@@ -10,11 +10,10 @@ import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.scheduler_dev.module.scheduler.repository.SchedulerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +21,7 @@ public class SchedulerService {
     private final SchedulerRepository schedulerRepository;
     private final MemberService memberService;
 
+    @Transactional
     public SchedulerDto saveScheduler(Long memberId, SchedulerCreateDto dto) {
         Member member = memberService.findById(memberId);
 
@@ -39,27 +39,22 @@ public class SchedulerService {
                 .map(SchedulerDto::toDto));
     }
 
+    @Transactional
     public SchedulerDto updateScheduler(Long memberId, Long schedulerId, SchedulerUpdateDto schedulerUpdateDto) {
-        Scheduler scheduler = findById(schedulerId);
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .filter(s -> s.getMember().getId().equals(memberId))
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.USER_MISMATCH));
 
-        Member member = memberService.findById(memberId);
+        scheduler.updateScheduler(schedulerUpdateDto.getTitle(), schedulerUpdateDto.getContent());
 
-        validate(scheduler, member);
-
-        scheduler.updateTitle(schedulerUpdateDto.getTitle());
-        scheduler.updateContent(schedulerUpdateDto.getContent());
-        Scheduler updatedScheduler = schedulerRepository.save(scheduler);
-
-        return SchedulerDto.toDto(updatedScheduler);
+        return SchedulerDto.toDto(scheduler);
     }
 
+    @Transactional
     public SchedulerDto deleteScheduler(Long memberId, Long schedulerId) {
-        Scheduler scheduler = findById(schedulerId);
-
-
-        Member member = memberService.findById(memberId);
-
-        validate(scheduler, member);
+        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+                .filter(s -> s.getMember().getId().equals(memberId))
+                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.USER_MISMATCH));
 
         schedulerRepository.delete(scheduler);
 
@@ -71,21 +66,14 @@ public class SchedulerService {
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
     }
 
+    @Transactional
     public void plusCommentCount(Scheduler scheduler) {
         scheduler.plusCommentCount();
-
-        schedulerRepository.save(scheduler);
     }
 
+    @Transactional
     public void minusCommentCount(Scheduler scheduler) {
         scheduler.minusCommentCount();
-
-        schedulerRepository.save(scheduler);
     }
 
-    private void validate(Scheduler scheduler, Member member) {
-        if (!Objects.equals(scheduler.getMember().getId(), member.getId())) {
-            throw new SchedulerException(SchedulerExceptionCode.USER_MISMATCH);
-        }
-    }
 }

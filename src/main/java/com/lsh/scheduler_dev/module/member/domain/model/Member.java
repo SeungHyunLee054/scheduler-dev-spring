@@ -36,12 +36,9 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public void updateName(String newName) {
-        this.name = newName;
-    }
-
-    public void updatePassword(String newPassword) {
-        this.password = newPassword;
+    public void updateMember(String name, String password) {
+        this.name = name;
+        this.password = password;
     }
 
 }

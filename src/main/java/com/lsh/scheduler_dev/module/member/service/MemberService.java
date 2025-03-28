@@ -12,20 +12,21 @@ import com.lsh.scheduler_dev.module.member.dto.response.MemberDto;
 import com.lsh.scheduler_dev.module.member.exception.MemberException;
 import com.lsh.scheduler_dev.module.member.exception.MemberExceptionCode;
 import com.lsh.scheduler_dev.module.member.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
 
+    @Transactional
     public MemberDto saveMember(MemberCreateDto memberCreateDto) {
-        validate(memberRepository.existsByEmail(memberCreateDto.getEmail()),
-                MemberExceptionCode.ALREADY_EXIST_MEMBER);
+        if (memberRepository.existsByEmail(memberCreateDto.getEmail())) {
+            throw new MemberException(MemberExceptionCode.ALREADY_EXIST_MEMBER);
+        }
 
         Member savedMember = memberRepository.save(Member.builder()
                 .name(memberCreateDto.getName())
@@ -36,6 +37,7 @@ public class MemberService {
         return MemberDto.toDto(savedMember);
     }
 
+    @Transactional
     public MemberAuthDto signIn(MemberSignInDto dto) {
         Member member = memberRepository.findByEmail(dto.getEmail())
                 .filter(m -> PasswordUtils.matches(dto.getPassword(), m.getPassword()))
@@ -52,25 +54,20 @@ public class MemberService {
                 .map(MemberDto::toDto));
     }
 
+    @Transactional
     public MemberDto updateMember(Long memberId, MemberUpdateDto dto) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
+        Member member = findById(memberId);
 
-        member.updateName(dto.getName());
-        member.updatePassword(dto.getPassword());
+        member.updateMember(dto.getName(), PasswordUtils.encryptPassword(dto.getPassword()));
 
-        Member updatedMember = memberRepository.save(member);
-
-        return MemberDto.toDto(updatedMember);
+        return MemberDto.toDto(member);
     }
 
-    public MemberDto removeMember(Long memberId, Long loggedInMemberId) {
-        validate(!Objects.equals(memberId, loggedInMemberId), MemberExceptionCode.USER_MISMATCH);
+    @Transactional
+    public MemberDto removeMember(Long memberId) {
+        Member member = findById(memberId);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
-
-        memberRepository.deleteById(memberId);
+        memberRepository.delete(member);
 
         return MemberDto.toDto(member);
     }
@@ -78,12 +75,6 @@ public class MemberService {
     public Member findById(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
-    }
-
-    private void validate(boolean condition, MemberExceptionCode exceptionCode) {
-        if (condition) {
-            throw new MemberException(exceptionCode);
-        }
     }
 
 }

@@ -19,6 +19,7 @@ import java.util.List;
 public class SignInFilter extends OncePerRequestFilter {
     private static final List<String> WHITE_LIST = List.of("/members/signup",
             "/members/signin",
+            "/resources",
             "/swagger-ui",
             "/v3/api-docs",
             "/swagger-resources",
