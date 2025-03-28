@@ -1,21 +1,14 @@
 package com.lsh.scheduler_dev.module.member.controller;
 
-import com.lsh.scheduler_dev.common.security.constant.AuthorizationConstant;
-import com.lsh.scheduler_dev.common.security.jwt.provieder.dto.MemberAuthDto;
-import com.lsh.scheduler_dev.common.security.jwt.provieder.dto.TokenDto;
-import com.lsh.scheduler_dev.module.member.dto.MemberCreateRequestDto;
-import com.lsh.scheduler_dev.module.member.dto.MemberResponseDto;
-import com.lsh.scheduler_dev.module.member.dto.MemberSignInRequestDto;
-import com.lsh.scheduler_dev.module.member.dto.MemberUpdateRequestDto;
+
+import com.lsh.scheduler_dev.module.member.dto.*;
 import com.lsh.scheduler_dev.module.member.service.MemberService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -31,20 +24,14 @@ public class MemberController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody MemberSignInRequestDto dto,
-                                    HttpServletResponse response
+                                    HttpServletRequest request
     ) {
         try {
-            Date now = new Date();
-            TokenDto tokenDto = memberService.signIn(dto, now);
-            long expiration = memberService.getExpiration(tokenDto.getAccessToken());
+            HttpSession session = request.getSession();
+            MemberAuthDto memberAuthDto = memberService.signIn(dto);
+            session.setAttribute("Authorization", memberAuthDto);
 
-            Cookie cookie = new Cookie(AuthorizationConstant.AUTHORIZATION_HEADER, tokenDto.getAccessToken());
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge((int) expiration);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-
-            return ResponseEntity.ok(tokenDto);
+            return ResponseEntity.ok("logged in");
         } catch (RuntimeException e) {
             throw e;
         }
@@ -58,7 +45,7 @@ public class MemberController {
     @PutMapping("/{memberId}")
     public ResponseEntity<MemberResponseDto> updateMember(
             @PathVariable Long memberId,
-            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            MemberAuthDto memberAuthDto,
             @RequestBody MemberUpdateRequestDto memberUpdateRequestDto
     ) {
         return ResponseEntity.ok(memberService.updateMember(memberId, memberAuthDto, memberUpdateRequestDto));
@@ -67,13 +54,11 @@ public class MemberController {
     @DeleteMapping("/{memberId}")
     public ResponseEntity<MemberResponseDto> deleteMember(
             @PathVariable Long memberId,
-            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            HttpServletResponse response
+            @SessionAttribute(name = "Authorization") MemberAuthDto memberAuthDto,
+            HttpServletRequest request
     ) {
-        Cookie cookie = new Cookie("empty", null);
-        cookie.setMaxAge(0);
+        request.getSession().removeAttribute("Authorization");
 
-        response.addCookie(cookie);
         return ResponseEntity.ok(memberService.removeMember(memberId, memberAuthDto));
     }
 

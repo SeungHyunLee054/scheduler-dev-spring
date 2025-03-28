@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.common.security.jwt.provieder.dto;
+package com.lsh.scheduler_dev.module.member.dto;
 
 import lombok.Builder;
 import lombok.Getter;
