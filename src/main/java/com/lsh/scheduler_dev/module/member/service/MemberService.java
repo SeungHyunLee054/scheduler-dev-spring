@@ -2,7 +2,7 @@ package com.lsh.scheduler_dev.module.member.service;
 
 
 import com.lsh.scheduler_dev.common.response.ListResponse;
-import com.lsh.scheduler_dev.common.utils.PasswordUtils;
+import com.lsh.scheduler_dev.common.utils.password.PasswordUtils;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.member.dto.request.MemberCreateDto;

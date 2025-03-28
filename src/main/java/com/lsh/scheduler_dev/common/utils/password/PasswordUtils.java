@@ -1,11 +1,15 @@
-package com.lsh.scheduler_dev.common.utils;
+package com.lsh.scheduler_dev.common.utils.password;
+
+import com.lsh.scheduler_dev.common.utils.password.exception.PasswordUtilsException;
+import com.lsh.scheduler_dev.common.utils.password.exception.PasswordUtilsExceptionCode;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Objects;
-
 
 public class PasswordUtils {
     private static final String ALG = "HmacSHA3-256";
@@ -24,8 +28,10 @@ public class PasswordUtils {
             }
 
             return Base64.getEncoder().encodeToString(hashedPassword);
+        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+            throw new PasswordUtilsException(PasswordUtilsExceptionCode.ENCRYPT_ERROR);
         } catch (Exception e) {
-            return null;
+            throw new PasswordUtilsException(PasswordUtilsExceptionCode.UNEXPECTED_ERROR);
         }
     }
 
