@@ -34,7 +34,7 @@ public class SchedulerService {
         return SchedulerDto.toDto(savedScheduler);
     }
 
-    public ListResponse<SchedulerDto> findAllSchedulers(Pageable pageable) {
+    public ListResponse<SchedulerDto> getAllSchedulers(Pageable pageable) {
         return ListResponse.toListResponse(schedulerRepository.findAllByOrderByModifiedAtDesc(pageable)
                 .map(SchedulerDto::toDto));
     }

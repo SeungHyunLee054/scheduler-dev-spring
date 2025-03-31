@@ -38,9 +38,9 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberAuthDto signIn(MemberSignInDto dto) {
-        Member member = memberRepository.findByEmail(dto.getEmail())
-                .filter(m -> PasswordUtils.matches(dto.getPassword(), m.getPassword()))
+    public MemberAuthDto signIn(MemberSignInDto memberSignInDto) {
+        Member member = memberRepository.findByEmail(memberSignInDto.getEmail())
+                .filter(m -> PasswordUtils.matches(memberSignInDto.getPassword(), m.getPassword()))
                 .orElseThrow(() -> new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
 
         return MemberAuthDto.builder()
@@ -55,16 +55,16 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberDto updateMember(Long memberId, MemberUpdateDto dto) {
+    public MemberDto updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
         Member member = findById(memberId);
 
-        member.updateMember(dto.getName(), PasswordUtils.encryptPassword(dto.getPassword()));
+        member.updateMember(memberUpdateDto.getName(), PasswordUtils.encryptPassword(memberUpdateDto.getPassword()));
 
         return MemberDto.toDto(member);
     }
 
     @Transactional
-    public MemberDto removeMember(Long memberId) {
+    public MemberDto deleteMember(Long memberId) {
         Member member = findById(memberId);
 
         memberRepository.delete(member);

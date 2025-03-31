@@ -4,9 +4,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class MemberSignInDto {
     @NotNull(message = "이메일은 필수 입력 값입니다.")
     @NotBlank(message = "이메일은 공백이 아니어야 합니다.")

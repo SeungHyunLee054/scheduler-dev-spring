@@ -21,7 +21,7 @@ public class SchedulerController {
     private final SchedulerService schedulerService;
 
     @PostMapping
-    public ResponseEntity<SchedulerDto> create(
+    public ResponseEntity<SchedulerDto> createScheduler(
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             @Valid @RequestBody SchedulerCreateDto schedulerCreateDto
     ) {
@@ -33,7 +33,7 @@ public class SchedulerController {
             @RequestParam(defaultValue = "0") Integer pageIdx,
             @RequestParam(defaultValue = "10") Integer pageSize
     ) {
-        return ResponseEntity.ok(schedulerService.findAllSchedulers(PageRequest.of(pageIdx, pageSize)));
+        return ResponseEntity.ok(schedulerService.getAllSchedulers(PageRequest.of(pageIdx, pageSize)));
     }
 
     @PutMapping("/{schedulerId}")

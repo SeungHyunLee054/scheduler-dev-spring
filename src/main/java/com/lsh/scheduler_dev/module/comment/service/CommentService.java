@@ -40,7 +40,7 @@ public class CommentService {
         return CommentDto.toDto(savedComment);
     }
 
-    public ListResponse<CommentDto> getAllComments(Long schedulerId, Pageable pageable) {
+    public ListResponse<CommentDto> getAllCommentsByScheduler(Long schedulerId, Pageable pageable) {
         return ListResponse
                 .toListResponse(commentRepository.findAllBySchedulerIdOrderByModifiedAtDesc(schedulerId, pageable)
                         .map(CommentDto::toDto));

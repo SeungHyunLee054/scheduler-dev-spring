@@ -66,7 +66,7 @@ public class MemberController {
     ) {
         request.getSession().removeAttribute(SessionConstants.AUTHORIZATION);
 
-        return ResponseEntity.ok(memberService.removeMember(memberAuthDto.getMemberId()));
+        return ResponseEntity.ok(memberService.deleteMember(memberAuthDto.getMemberId()));
     }
 
 }

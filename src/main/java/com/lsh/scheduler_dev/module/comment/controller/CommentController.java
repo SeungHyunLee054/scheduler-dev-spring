@@ -20,12 +20,13 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{schedulerId}")
-    public ResponseEntity<CommentDto> addComment(
+    public ResponseEntity<CommentDto> createComment(
             @PathVariable Long schedulerId,
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
-            @Valid @RequestBody CommentCreateDto dto
+            @Valid @RequestBody CommentCreateDto commentCreateDto
     ) {
-        return ResponseEntity.ok(commentService.saveComment(schedulerId, memberAuthDto.getMemberId(), dto));
+        return ResponseEntity.ok(commentService
+                .saveComment(schedulerId, memberAuthDto.getMemberId(), commentCreateDto));
     }
 
     @GetMapping("/{schedulerId}")
@@ -34,7 +35,7 @@ public class CommentController {
             @RequestParam(defaultValue = "0") Integer pageIdx,
             @RequestParam(defaultValue = "10") Integer pageSize
     ) {
-        return ResponseEntity.ok(commentService.getAllComments(schedulerId, PageRequest.of(pageIdx, pageSize)));
+        return ResponseEntity.ok(commentService.getAllCommentsByScheduler(schedulerId, PageRequest.of(pageIdx, pageSize)));
     }
 
     @PutMapping("/{commentId}")
@@ -43,7 +44,8 @@ public class CommentController {
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             @Valid @RequestBody CommentUpdateDto commentUpdateDto
     ) {
-        return ResponseEntity.ok(commentService.updateComment(commentId, memberAuthDto.getMemberId(), commentUpdateDto));
+        return ResponseEntity.ok(commentService
+                .updateComment(commentId, memberAuthDto.getMemberId(), commentUpdateDto));
     }
 
     @DeleteMapping("/{commentId}")

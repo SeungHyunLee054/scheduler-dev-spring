@@ -3,9 +3,11 @@ package com.lsh.scheduler_dev.module.scheduler.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class SchedulerCreateDto {
     @NotNull(message = "제목은 필수 입력 값입니다.")
     @NotBlank(message = "제목은 공백이 아니어야 합니다.")
