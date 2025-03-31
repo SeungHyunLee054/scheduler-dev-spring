@@ -33,7 +33,7 @@ public class SchedulerService {
                 .content(schedulerCreateDto.getContent())
                 .build());
 
-        return SchedulerDto.toDto(savedScheduler);
+        return SchedulerDto.from(savedScheduler);
     }
 
     /**
@@ -44,7 +44,7 @@ public class SchedulerService {
      */
     public ListResponse<SchedulerDto> getAllSchedulers(Pageable pageable) {
         return ListResponse.toListResponse(schedulerRepository.findAllByOrderByModifiedAtDesc(pageable)
-                .map(SchedulerDto::toDto));
+                .map(SchedulerDto::from));
     }
 
     /**
@@ -63,7 +63,7 @@ public class SchedulerService {
 
         scheduler.updateScheduler(schedulerUpdateDto.getTitle(), schedulerUpdateDto.getContent());
 
-        return SchedulerDto.toDto(scheduler);
+        return SchedulerDto.from(scheduler);
     }
 
     /**
@@ -81,7 +81,7 @@ public class SchedulerService {
 
         schedulerRepository.delete(scheduler);
 
-        return SchedulerDto.toDto(scheduler);
+        return SchedulerDto.from(scheduler);
     }
 
     /**

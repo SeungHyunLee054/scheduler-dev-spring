@@ -35,7 +35,7 @@ public class CommentService {
                 .scheduler(scheduler)
                 .build());
 
-        return CommentDto.toDto(savedComment);
+        return CommentDto.from(savedComment);
     }
 
     /**
@@ -48,7 +48,7 @@ public class CommentService {
     public ListResponse<CommentDto> getAllCommentsByScheduler(Long schedulerId, Pageable pageable) {
         return ListResponse
                 .toListResponse(commentRepository.findAllBySchedulerIdOrderByModifiedAtDesc(schedulerId, pageable)
-                        .map(CommentDto::toDto));
+                        .map(CommentDto::from));
     }
 
     /**
@@ -67,7 +67,7 @@ public class CommentService {
 
         comment.updateContent(commentUpdateDto.getContent());
 
-        return CommentDto.toDto(comment);
+        return CommentDto.from(comment);
     }
 
     /**
@@ -84,7 +84,7 @@ public class CommentService {
 
         commentRepository.delete(comment);
 
-        return CommentDto.toDto(comment);
+        return CommentDto.from(comment);
     }
 
 }

@@ -15,7 +15,7 @@ public class MemberDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static MemberDto toDto(Member member) {
+    public static MemberDto from(Member member) {
         return MemberDto.builder()
                 .memberId(member.getId())
                 .name(member.getName())

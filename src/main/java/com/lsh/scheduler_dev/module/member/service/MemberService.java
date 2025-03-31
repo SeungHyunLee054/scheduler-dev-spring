@@ -40,7 +40,7 @@ public class MemberService {
                 .password(PasswordUtils.encryptPassword(memberCreateDto.getPassword()))
                 .build());
 
-        return MemberDto.toDto(savedMember);
+        return MemberDto.from(savedMember);
     }
 
     /**
@@ -69,7 +69,7 @@ public class MemberService {
      */
     public ListResponse<MemberDto> getAllMembers(Pageable pageable) {
         return ListResponse.toListResponse(memberRepository.findAllByOrderByModifiedAtDesc(pageable)
-                .map(MemberDto::toDto));
+                .map(MemberDto::from));
     }
 
     /**
@@ -85,7 +85,7 @@ public class MemberService {
 
         member.updateMember(memberUpdateDto.getName(), PasswordUtils.encryptPassword(memberUpdateDto.getPassword()));
 
-        return MemberDto.toDto(member);
+        return MemberDto.from(member);
     }
 
     /**
@@ -100,7 +100,7 @@ public class MemberService {
 
         memberRepository.delete(member);
 
-        return MemberDto.toDto(member);
+        return MemberDto.from(member);
     }
 
     /**
