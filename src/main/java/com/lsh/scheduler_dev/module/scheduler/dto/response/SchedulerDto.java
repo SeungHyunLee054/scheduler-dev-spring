@@ -18,7 +18,7 @@ public class SchedulerDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static SchedulerDto toDto(Scheduler scheduler) {
+    public static SchedulerDto from(Scheduler scheduler) {
         return SchedulerDto.builder()
                 .schedulerId(scheduler.getId())
                 .memberId(scheduler.getMember().getId())

@@ -16,7 +16,7 @@ public class CommentDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static CommentDto toDto(Comment comment) {
+    public static CommentDto from(Comment comment) {
         return CommentDto.builder()
                 .commentId(comment.getId())
                 .memberId(comment.getMember().getId())
