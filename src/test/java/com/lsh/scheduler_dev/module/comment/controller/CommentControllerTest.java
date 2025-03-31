@@ -7,7 +7,6 @@ import com.lsh.scheduler_dev.module.comment.application.CommentService;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
 import com.lsh.scheduler_dev.module.comment.dto.response.CommentDto;
-
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,10 +64,11 @@ class CommentControllerTest {
                 .thenReturn(commentDto);
 
         // When
-        ResultActions perform = mockMvc.perform(post("/comments/{schedulerId}", 1L)
+        ResultActions perform = mockMvc.perform(post("/comments")
                 .sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(commentCreateDto)));
+                .content(objectMapper.writeValueAsString(commentCreateDto))
+                .param("schedulerId", "1"));
 
         // Then
         perform.andDo(print())

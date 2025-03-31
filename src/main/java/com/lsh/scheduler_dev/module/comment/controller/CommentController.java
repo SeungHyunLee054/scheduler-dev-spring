@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
     private final CommentService commentService;
 
-    @PostMapping("/{schedulerId}")
+    @PostMapping
     public ResponseEntity<CommentDto> createComment(
-            @PathVariable Long schedulerId,
+            @RequestParam Long schedulerId,
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             @Valid @RequestBody CommentCreateDto commentCreateDto
     ) {
