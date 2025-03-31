@@ -10,13 +10,7 @@ import com.lsh.scheduler_dev.module.comment.exception.CommentException;
 import com.lsh.scheduler_dev.module.comment.exception.CommentExceptionCode;
 import com.lsh.scheduler_dev.module.comment.repository.CommentRepository;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
-import com.lsh.scheduler_dev.module.member.exception.MemberException;
-import com.lsh.scheduler_dev.module.member.exception.MemberExceptionCode;
-import com.lsh.scheduler_dev.module.member.service.MemberService;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
-import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
-import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
-import com.lsh.scheduler_dev.module.scheduler.service.SchedulerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,12 +36,6 @@ class CommentServiceTest {
     @Mock
     private CommentRepository commentRepository;
 
-    @Mock
-    private MemberService memberService;
-
-    @Mock
-    private SchedulerService schedulerService;
-
     @InjectMocks
     private CommentService commentService;
 
@@ -60,62 +48,18 @@ class CommentServiceTest {
         Comment comment = getComment();
         CommentCreateDto commentCreateDto = new CommentCreateDto("test");
 
-        given(memberService.findById(anyLong()))
-                .willReturn(member);
-        given(schedulerService.findById(anyLong()))
-                .willReturn(scheduler);
         given(commentRepository.save(any()))
                 .willReturn(comment);
 
         // When
-        CommentDto commentDto = commentService.saveComment(scheduler.getId(), member.getId(), commentCreateDto);
+        CommentDto commentDto = commentService.saveComment(member, scheduler, commentCreateDto);
 
         // Then
         verify(commentRepository, times(1)).save(any());
-        verify(schedulerService, times(1)).plusCommentCount(any());
         assertAll(
                 () -> assertEquals(comment.getId(), commentDto.getCommentId()),
                 () -> assertEquals(commentCreateDto.getContent(), commentDto.getContent())
-                );
-
-    }
-
-    @Test
-    @DisplayName("댓글 생성 실패 - 유저를 찾을 수 없음")
-    void fail_saveComment_memberNotFound() {
-        // Given
-        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
-
-        given(memberService.findById(anyLong()))
-                .willThrow(new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
-
-        // When
-        MemberException exception = assertThrows(MemberException.class,
-                () -> commentService.saveComment(1L, 1L, commentCreateDto));
-
-        // Then
-        assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());
-
-    }
-
-    @Test
-    @DisplayName("댓글 생성 실패 - 일정을 찾을 수 없음")
-    void fail_saveComment_schedulerNotFound() {
-        // Given
-        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
-        Member member = getMember();
-
-        given(memberService.findById(anyLong()))
-                .willReturn(member);
-        given(schedulerService.findById(anyLong()))
-                .willThrow(new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
-
-        // When
-        SchedulerException exception = assertThrows(SchedulerException.class,
-                () -> commentService.saveComment(1L, 1L, commentCreateDto));
-
-        // Then
-        assertEquals(SchedulerExceptionCode.SCHEDULER_NOT_FOUND, exception.getErrorCode());
+        );
 
     }
 
@@ -196,8 +140,8 @@ class CommentServiceTest {
 
         // Then
         assertAll(
-                ()->assertEquals(comment.getId(),commentDto.getCommentId()),
-                ()->assertEquals(comment.getContent(),commentDto.getContent())
+                () -> assertEquals(comment.getId(), commentDto.getCommentId()),
+                () -> assertEquals(comment.getContent(), commentDto.getContent())
         );
 
     }

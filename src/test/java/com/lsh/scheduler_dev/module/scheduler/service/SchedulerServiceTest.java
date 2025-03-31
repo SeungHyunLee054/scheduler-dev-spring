@@ -3,9 +3,6 @@ package com.lsh.scheduler_dev.module.scheduler.service;
 import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.common.utils.password.PasswordUtils;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
-import com.lsh.scheduler_dev.module.member.exception.MemberException;
-import com.lsh.scheduler_dev.module.member.exception.MemberExceptionCode;
-import com.lsh.scheduler_dev.module.member.service.MemberService;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
@@ -37,9 +34,6 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class SchedulerServiceTest {
     @Mock
-    private MemberService memberService;
-
-    @Mock
     private SchedulerRepository schedulerRepository;
 
     @InjectMocks
@@ -52,13 +46,11 @@ class SchedulerServiceTest {
         Member member = getMember();
         SchedulerCreateDto schedulerCreateDto = new SchedulerCreateDto("test", "test");
 
-        given(memberService.findById(anyLong()))
-                .willReturn(member);
         given(schedulerRepository.save(any()))
                 .willReturn(getScheduler());
 
         // When
-        SchedulerDto schedulerDto = schedulerService.saveScheduler(1L, schedulerCreateDto);
+        SchedulerDto schedulerDto = schedulerService.saveScheduler(member, schedulerCreateDto);
 
         // Then
         verify(schedulerRepository, times(1)).save(any());
@@ -66,24 +58,6 @@ class SchedulerServiceTest {
                 () -> assertEquals(schedulerDto.getTitle(), schedulerCreateDto.getTitle()),
                 () -> assertEquals(schedulerDto.getContent(), schedulerCreateDto.getContent())
         );
-
-    }
-
-    @Test
-    @DisplayName("일정 저장 실패 - 유저를 찾을 수 없음")
-    void fail_saveScheduler_memberNotFound() {
-        // Given
-        SchedulerCreateDto schedulerCreateDto = new SchedulerCreateDto("test", "test");
-
-        given(memberService.findById(anyLong()))
-                .willThrow(new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
-
-        // When
-        MemberException exception = assertThrows(MemberException.class,
-                () -> schedulerService.saveScheduler(1L, schedulerCreateDto));
-
-        // Then
-        assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());
 
     }
 

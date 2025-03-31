@@ -6,6 +6,7 @@ import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
+import com.lsh.scheduler_dev.module.scheduler.facade.SchedulerFacade;
 import com.lsh.scheduler_dev.module.scheduler.service.SchedulerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ class SchedulerControllerTest {
     @MockitoBean
     private SchedulerService schedulerService;
 
+    @MockitoBean
+    private SchedulerFacade schedulerFacade;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,7 +49,7 @@ class SchedulerControllerTest {
         SchedulerDto schedulerDto = getSchedulerDto();
         MemberAuthDto memberAuthDto = getMemberAuthDto();
 
-        given(schedulerService.saveScheduler(anyLong(), any()))
+        given(schedulerFacade.saveScheduler(any(), any()))
                 .willReturn(schedulerDto);
 
         // When
