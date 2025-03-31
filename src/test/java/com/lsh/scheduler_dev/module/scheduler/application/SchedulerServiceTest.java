@@ -1,12 +1,12 @@
-package com.lsh.scheduler_dev.module.scheduler.facade;
+package com.lsh.scheduler_dev.module.scheduler.application;
 
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.exception.MemberException;
 import com.lsh.scheduler_dev.module.member.exception.MemberExceptionCode;
 import com.lsh.scheduler_dev.module.member.service.MemberService;
+import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
-import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
-import com.lsh.scheduler_dev.module.scheduler.service.SchedulerService;
+import com.lsh.scheduler_dev.module.scheduler.service.SchedulerDomainService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,15 +23,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class SchedulerFacadeTest {
+class SchedulerServiceTest {
     @Mock
-    private SchedulerService schedulerService;
+    private SchedulerDomainService schedulerDomainService;
 
     @Mock
     private MemberService memberService;
 
     @Mock
-    private SchedulerDto schedulerDto;
+    private Scheduler scheduler;
 
     @Mock
     private SchedulerCreateDto schedulerCreateDto;
@@ -40,23 +40,25 @@ class SchedulerFacadeTest {
     private Member member;
 
     @InjectMocks
-    private SchedulerFacade schedulerFacade;
+    private SchedulerService schedulerService;
 
     @Test
     @DisplayName("일정 생성 성공")
     void success_saveScheduler() {
         // Given
+        given(scheduler.getMember())
+                .willReturn(member);
         given(memberService.findById(anyLong()))
                 .willReturn(member);
-        given(schedulerService.saveScheduler(any(), any()))
-                .willReturn(schedulerDto);
+        given(schedulerDomainService.saveScheduler(any(), any()))
+                .willReturn(scheduler);
 
         // When
-        schedulerFacade.saveScheduler(anyLong(), schedulerCreateDto);
+        schedulerService.saveScheduler(anyLong(), schedulerCreateDto);
 
         // Then
         verify(memberService, times(1)).findById(anyLong());
-        verify(schedulerService, times(1)).saveScheduler(any(), any());
+        verify(schedulerDomainService, times(1)).saveScheduler(any(), any());
 
     }
 
@@ -69,7 +71,7 @@ class SchedulerFacadeTest {
 
         // When
         MemberException exception = assertThrows(MemberException.class,
-                () -> schedulerFacade.saveScheduler(member.getId(), schedulerCreateDto));
+                () -> schedulerService.saveScheduler(member.getId(), schedulerCreateDto));
 
         // Then
         assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());

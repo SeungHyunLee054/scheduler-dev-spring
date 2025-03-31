@@ -1,11 +1,9 @@
 package com.lsh.scheduler_dev.module.scheduler.service;
 
-import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
-import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.scheduler_dev.module.scheduler.repository.SchedulerRepository;
@@ -15,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class SchedulerServiceTest {
+class SchedulerDomainServiceTest {
     @Mock
     private SchedulerRepository schedulerRepository;
 
@@ -47,7 +46,7 @@ class SchedulerServiceTest {
     private Scheduler scheduler;
 
     @InjectMocks
-    private SchedulerService schedulerService;
+    private SchedulerDomainService schedulerDomainService;
 
     @Test
     @DisplayName("일정 생성 성공")
@@ -57,20 +56,18 @@ class SchedulerServiceTest {
                 .willReturn("test");
         given(scheduler.getContent())
                 .willReturn("test");
-        given(scheduler.getMember())
-                .willReturn(member);
 
         given(schedulerRepository.save(any()))
                 .willReturn(scheduler);
 
         // When
-        SchedulerDto schedulerDto = schedulerService.saveScheduler(member, schedulerCreateDto);
+        Scheduler savedScheduler = schedulerDomainService.saveScheduler(member, schedulerCreateDto);
 
         // Then
         verify(schedulerRepository, times(1)).save(any());
         assertAll(
-                () -> assertEquals("test", schedulerDto.getTitle()),
-                () -> assertEquals("test", schedulerDto.getContent())
+                () -> assertEquals("test", savedScheduler.getTitle()),
+                () -> assertEquals("test", savedScheduler.getContent())
         );
 
     }
@@ -82,21 +79,19 @@ class SchedulerServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         List<Scheduler> list = List.of(scheduler, scheduler);
 
-        given(scheduler.getMember())
-                .willReturn(member);
         given(schedulerRepository.findAllByOrderByModifiedAtDesc(any()))
                 .willReturn(new PageImpl<>(list, pageable, list.size()));
 
         // When
-        ListResponse<SchedulerDto> result = schedulerService.getAllSchedulers(any());
+        Page<Scheduler> result = schedulerDomainService.getAllSchedulers(any());
 
         // Then
-        List<SchedulerDto> content = result.getContent();
-        for (SchedulerDto schedulerDto : content) {
+        List<Scheduler> content = result.getContent();
+        for (Scheduler s : content) {
             assertAll(
-                    () -> assertEquals(schedulerDto.getSchedulerId(), scheduler.getId()),
-                    () -> assertEquals(schedulerDto.getTitle(), scheduler.getTitle()),
-                    () -> assertEquals(schedulerDto.getContent(), scheduler.getContent())
+                    () -> assertEquals(s.getId(), scheduler.getId()),
+                    () -> assertEquals(s.getTitle(), scheduler.getTitle()),
+                    () -> assertEquals(s.getContent(), scheduler.getContent())
             );
         }
 
@@ -126,12 +121,13 @@ class SchedulerServiceTest {
 
 
         // When
-        SchedulerDto schedulerDto = schedulerService.updateScheduler(1L, 1L, schedulerUpdateDto);
+        Scheduler updatedScheduler =
+                schedulerDomainService.updateScheduler(1L, 1L, schedulerUpdateDto);
 
         // Then
         assertAll(
-                () -> assertEquals(schedulerDto.getTitle(), schedulerUpdateDto.getTitle()),
-                () -> assertEquals(schedulerDto.getContent(), schedulerUpdateDto.getContent())
+                () -> assertEquals(updatedScheduler.getTitle(), schedulerUpdateDto.getTitle()),
+                () -> assertEquals(updatedScheduler.getContent(), schedulerUpdateDto.getContent())
         );
 
     }
@@ -145,7 +141,7 @@ class SchedulerServiceTest {
 
         // When
         SchedulerException exception = assertThrows(SchedulerException.class,
-                () -> schedulerService.updateScheduler(1L, 1L, schedulerUpdateDto));
+                () -> schedulerDomainService.updateScheduler(1L, 1L, schedulerUpdateDto));
 
         // Then
         assertEquals(SchedulerExceptionCode.USER_MISMATCH, exception.getErrorCode());
@@ -168,15 +164,15 @@ class SchedulerServiceTest {
                 .willReturn(Optional.of(scheduler));
 
         // When
-        SchedulerDto schedulerDto =
-                schedulerService.deleteScheduler(1L, 1L);
+
+        Scheduler deletedScheduler = schedulerDomainService.deleteScheduler(1L, 1L);
 
         // Then
         assertAll(
-                () -> assertEquals(scheduler.getId(), schedulerDto.getSchedulerId()),
-                () -> assertEquals(scheduler.getMember().getName(), schedulerDto.getName()),
-                () -> assertEquals(scheduler.getTitle(), schedulerDto.getTitle()),
-                () -> assertEquals(scheduler.getContent(), schedulerDto.getContent())
+                () -> assertEquals(scheduler.getId(), deletedScheduler.getId()),
+                () -> assertEquals(scheduler.getMember().getName(), deletedScheduler.getMember().getName()),
+                () -> assertEquals(scheduler.getTitle(), deletedScheduler.getTitle()),
+                () -> assertEquals(scheduler.getContent(), deletedScheduler.getContent())
         );
 
     }
@@ -190,11 +186,10 @@ class SchedulerServiceTest {
 
         // When
         SchedulerException exception = assertThrows(SchedulerException.class,
-                () -> schedulerService.deleteScheduler(1L, 1L));
+                () -> schedulerDomainService.deleteScheduler(1L, 1L));
 
         // Then
         assertEquals(SchedulerExceptionCode.USER_MISMATCH, exception.getErrorCode());
 
     }
-
 }

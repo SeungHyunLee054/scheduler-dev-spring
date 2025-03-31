@@ -1,22 +1,21 @@
 package com.lsh.scheduler_dev.module.scheduler.service;
 
-import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
-import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.scheduler_dev.module.scheduler.repository.SchedulerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SchedulerService {
+public class SchedulerDomainService {
     private final SchedulerRepository schedulerRepository;
 
     /**
@@ -24,16 +23,14 @@ public class SchedulerService {
      *
      * @param member             일정을 작성한 유저
      * @param schedulerCreateDto 작성하려는 일정 내용
-     * @return 일정 정보
+     * @return 일정
      */
-    public SchedulerDto saveScheduler(Member member, SchedulerCreateDto schedulerCreateDto) {
-        Scheduler savedScheduler = schedulerRepository.save(Scheduler.builder()
+    public Scheduler saveScheduler(Member member, SchedulerCreateDto schedulerCreateDto) {
+        return schedulerRepository.save(Scheduler.builder()
                 .member(member)
                 .title(schedulerCreateDto.getTitle())
                 .content(schedulerCreateDto.getContent())
                 .build());
-
-        return SchedulerDto.from(savedScheduler);
     }
 
     /**
@@ -42,9 +39,8 @@ public class SchedulerService {
      * @param pageable 페이지 값
      * @return Page에서 원하는 정보 값만 담은 List를 반환
      */
-    public ListResponse<SchedulerDto> getAllSchedulers(Pageable pageable) {
-        return ListResponse.toListResponse(schedulerRepository.findAllByOrderByModifiedAtDesc(pageable)
-                .map(SchedulerDto::from));
+    public Page<Scheduler> getAllSchedulers(Pageable pageable) {
+        return schedulerRepository.findAllByOrderByModifiedAtDesc(pageable);
     }
 
     /**
@@ -53,17 +49,16 @@ public class SchedulerService {
      * @param memberId           일정을 작성한 유저 id
      * @param schedulerId        일정 id
      * @param schedulerUpdateDto 수정할 내용
-     * @return 일정 정보
+     * @return 일정
      */
-    @Transactional
-    public SchedulerDto updateScheduler(Long memberId, Long schedulerId, SchedulerUpdateDto schedulerUpdateDto) {
+    public Scheduler updateScheduler(Long memberId, Long schedulerId, SchedulerUpdateDto schedulerUpdateDto) {
         Scheduler scheduler = schedulerRepository.findById(schedulerId)
                 .filter(s -> s.getMember().getId().equals(memberId))
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.USER_MISMATCH));
 
         scheduler.updateScheduler(schedulerUpdateDto.getTitle(), schedulerUpdateDto.getContent());
 
-        return SchedulerDto.from(scheduler);
+        return scheduler;
     }
 
     /**
@@ -71,17 +66,16 @@ public class SchedulerService {
      *
      * @param memberId    일정을 작성한 유저 id
      * @param schedulerId 일정 id
-     * @return 삭제된 일정 정보
+     * @return 삭제된 일정
      */
-    @Transactional
-    public SchedulerDto deleteScheduler(Long memberId, Long schedulerId) {
-        Scheduler scheduler = schedulerRepository.findById(schedulerId)
+    public Scheduler deleteScheduler(Long memberId, Long schedulerId) {
+        Scheduler deletedScheduler = schedulerRepository.findById(schedulerId)
                 .filter(s -> s.getMember().getId().equals(memberId))
                 .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.USER_MISMATCH));
 
-        schedulerRepository.delete(scheduler);
+        schedulerRepository.delete(deletedScheduler);
 
-        return SchedulerDto.from(scheduler);
+        return deletedScheduler;
     }
 
     /**

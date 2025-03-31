@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class SchedulerCreateDto {
     @NotNull(message = "제목은 필수 입력 값입니다.")
     @NotBlank(message = "제목은 공백이 아니어야 합니다.")

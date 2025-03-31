@@ -68,7 +68,7 @@ public class MemberService {
      * @return Page에서 원하는 정보 값만 담은 List를 반환
      */
     public ListResponse<MemberDto> getAllMembers(Pageable pageable) {
-        return ListResponse.toListResponse(memberRepository.findAllByOrderByModifiedAtDesc(pageable)
+        return ListResponse.from(memberRepository.findAllByOrderByModifiedAtDesc(pageable)
                 .map(MemberDto::from));
     }
 

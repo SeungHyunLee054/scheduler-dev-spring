@@ -3,11 +3,11 @@ package com.lsh.scheduler_dev.module.comment.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsh.scheduler_dev.common.constants.SessionConstants;
 import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.module.comment.application.CommentService;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
 import com.lsh.scheduler_dev.module.comment.dto.response.CommentDto;
-import com.lsh.scheduler_dev.module.comment.facade.CommentFacade;
-import com.lsh.scheduler_dev.module.comment.service.CommentService;
+
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,9 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CommentControllerTest {
     @MockitoBean
     private CommentService commentService;
-
-    @MockitoBean
-    private CommentFacade commentFacade;
 
     @Mock
     private MemberAuthDto memberAuthDto;
@@ -64,7 +61,7 @@ class CommentControllerTest {
         when(commentDto.getContent())
                 .thenReturn("test");
 
-        when(commentFacade.saveComment(anyLong(), anyLong(), any()))
+        when(commentService.saveComment(anyLong(), anyLong(), any()))
                 .thenReturn(commentDto);
 
         // When
@@ -102,7 +99,8 @@ class CommentControllerTest {
                         .build());
 
         // When
-        ResultActions perform = mockMvc.perform(get("/comments/{schedulerId}", 1L)
+        ResultActions perform = mockMvc.perform(get("/comments")
+                .param("schedulerId", "1")
                 .param("pageIdx", "0")
                 .param("pageSize", "10"));
 
@@ -150,7 +148,7 @@ class CommentControllerTest {
     @DisplayName("댓글 삭제 성공")
     void success_deleteComment() throws Exception {
         // Given
-        when(commentFacade.deleteComment(anyLong(), anyLong()))
+        when(commentService.deleteComment(anyLong(), anyLong()))
                 .thenReturn(commentDto);
 
         // When

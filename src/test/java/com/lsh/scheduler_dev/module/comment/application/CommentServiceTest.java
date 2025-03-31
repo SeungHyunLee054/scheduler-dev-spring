@@ -1,8 +1,8 @@
-package com.lsh.scheduler_dev.module.comment.facade;
+package com.lsh.scheduler_dev.module.comment.application;
 
+import com.lsh.scheduler_dev.module.comment.domain.model.Comment;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
-import com.lsh.scheduler_dev.module.comment.dto.response.CommentDto;
-import com.lsh.scheduler_dev.module.comment.service.CommentService;
+import com.lsh.scheduler_dev.module.comment.service.CommentDomainService;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.exception.MemberException;
 import com.lsh.scheduler_dev.module.member.exception.MemberExceptionCode;
@@ -10,7 +10,7 @@ import com.lsh.scheduler_dev.module.member.service.MemberService;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
-import com.lsh.scheduler_dev.module.scheduler.service.SchedulerService;
+import com.lsh.scheduler_dev.module.scheduler.service.SchedulerDomainService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,15 +27,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class CommentFacadeTest {
+class CommentServiceTest {
     @Mock
-    private CommentService commentService;
+    private CommentDomainService commentDomainService;
 
     @Mock
     private MemberService memberService;
 
     @Mock
-    private SchedulerService schedulerService;
+    private SchedulerDomainService schedulerDomainService;
 
     @Mock
     private Member member;
@@ -44,33 +44,41 @@ class CommentFacadeTest {
     private Scheduler scheduler;
 
     @Mock
-    private CommentDto commentDto;
+    private Comment comment;
 
     @Mock
     private CommentCreateDto commentCreateDto;
 
     @InjectMocks
-    private CommentFacade commentFacade;
+    private CommentService commentService;
 
     @Test
     @DisplayName("댓글 생성 성공")
     void success_saveComment() {
         // Given
+        given(comment.getMember())
+                .willReturn(member);
+        given(comment.getScheduler())
+                .willReturn(scheduler);
+
+        given(member.getId())
+                .willReturn(1L);
+
         given(memberService.findById(anyLong()))
                 .willReturn(member);
-        given(schedulerService.findById(anyLong()))
+        given(schedulerDomainService.findById(anyLong()))
                 .willReturn(scheduler);
-        given(commentService.saveComment(any(), any(), any()))
-                .willReturn(commentDto);
+        given(commentDomainService.saveComment(any(), any(), any()))
+                .willReturn(comment);
 
         // When
-        commentFacade.saveComment(1L, 1L, commentCreateDto);
+        commentService.saveComment(1L, 1L, commentCreateDto);
 
         // Then
         verify(memberService, times(1)).findById(anyLong());
-        verify(schedulerService, times(1)).plusCommentCount(any());
-        verify(schedulerService, times(1)).findById(anyLong());
-        verify(commentService, times(1)).saveComment(any(), any(), any());
+        verify(schedulerDomainService, times(1)).plusCommentCount(any());
+        verify(schedulerDomainService, times(1)).findById(anyLong());
+        verify(commentDomainService, times(1)).saveComment(any(), any(), any());
 
     }
 
@@ -83,7 +91,7 @@ class CommentFacadeTest {
 
         // When
         MemberException exception = assertThrows(MemberException.class,
-                () -> commentFacade.saveComment(1L, 1L, commentCreateDto));
+                () -> commentService.saveComment(1L, 1L, commentCreateDto));
 
         // Then
         assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());
@@ -94,16 +102,24 @@ class CommentFacadeTest {
     @DisplayName("댓글 삭제 성공")
     void success_deleteComment() {
         // Given
-        given(commentService.deleteComment(anyLong(), anyLong()))
-                .willReturn(commentDto);
+        given(comment.getMember())
+                .willReturn(member);
+        given(comment.getScheduler())
+                .willReturn(scheduler);
+
+        given(member.getId())
+                .willReturn(1L);
+
+        given(commentDomainService.deleteComment(anyLong(), anyLong()))
+                .willReturn(comment);
 
         // When
-        commentFacade.deleteComment(1L, 1L);
+        commentService.deleteComment(1L, 1L);
 
         // Then
-        verify(commentService, times(1)).deleteComment(anyLong(), anyLong());
-        verify(schedulerService, times(1)).findById(anyLong());
-        verify(schedulerService, times(1)).minusCommentCount(any());
+        verify(commentDomainService, times(1)).deleteComment(anyLong(), anyLong());
+        verify(schedulerDomainService, times(1)).findById(anyLong());
+        verify(schedulerDomainService, times(1)).minusCommentCount(any());
 
     }
 
@@ -111,14 +127,17 @@ class CommentFacadeTest {
     @DisplayName("댓글 삭제 실패 - 일정을 찾을 수 없음")
     void fail_deleteComment_schedulerNotFound() {
         // Given
-        given(commentService.deleteComment(anyLong(), anyLong()))
-                .willReturn(commentDto);
-        given(schedulerService.findById(anyLong()))
+        given(comment.getScheduler())
+                .willReturn(scheduler);
+
+        given(commentDomainService.deleteComment(anyLong(), anyLong()))
+                .willReturn(comment);
+        given(schedulerDomainService.findById(anyLong()))
                 .willThrow(new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
 
         // When
         SchedulerException exception = assertThrows(SchedulerException.class,
-                () -> commentFacade.deleteComment(1L, 1L));
+                () -> commentService.deleteComment(1L, 1L));
 
         // Then
         assertEquals(SchedulerExceptionCode.SCHEDULER_NOT_FOUND, exception.getErrorCode());

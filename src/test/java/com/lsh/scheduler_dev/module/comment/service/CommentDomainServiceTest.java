@@ -1,10 +1,8 @@
 package com.lsh.scheduler_dev.module.comment.service;
 
-import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.module.comment.domain.model.Comment;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
-import com.lsh.scheduler_dev.module.comment.dto.response.CommentDto;
 import com.lsh.scheduler_dev.module.comment.exception.CommentException;
 import com.lsh.scheduler_dev.module.comment.exception.CommentExceptionCode;
 import com.lsh.scheduler_dev.module.comment.repository.CommentRepository;
@@ -16,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class CommentServiceTest {
+class CommentDomainServiceTest {
     @Mock
     private CommentRepository commentRepository;
 
@@ -51,28 +50,23 @@ class CommentServiceTest {
     private CommentUpdateDto commentUpdateDto;
 
     @InjectMocks
-    private CommentService commentService;
+    private CommentDomainService commentDomainService;
 
     @Test
     @DisplayName("댓글 생성 성공")
     void success_saveComment() {
         // Given
-        given(comment.getMember())
-                .willReturn(member);
-        given(comment.getScheduler())
-                .willReturn(scheduler);
-
         given(commentRepository.save(any()))
                 .willReturn(comment);
 
         // When
-        CommentDto commentDto = commentService.saveComment(member, scheduler, commentCreateDto);
+        Comment savedComment = commentDomainService.saveComment(member, scheduler, commentCreateDto);
 
         // Then
         verify(commentRepository, times(1)).save(any());
         assertAll(
-                () -> assertEquals(comment.getId(), commentDto.getCommentId()),
-                () -> assertEquals(commentCreateDto.getContent(), commentDto.getContent())
+                () -> assertEquals(comment.getId(), savedComment.getId()),
+                () -> assertEquals(commentCreateDto.getContent(), savedComment.getContent())
         );
 
     }
@@ -84,23 +78,18 @@ class CommentServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         List<Comment> list = List.of(comment, comment);
 
-        given(comment.getMember())
-                .willReturn(member);
-        given(comment.getScheduler())
-                .willReturn(scheduler);
-
         given(commentRepository.findAllBySchedulerIdOrderByModifiedAtDesc(anyLong(), any()))
                 .willReturn(new PageImpl<>(list, pageable, list.size()));
 
         // When
-        ListResponse<CommentDto> result = commentService.getAllCommentsByScheduler(1L, pageable);
+        Page<Comment> result = commentDomainService.getAllCommentsByScheduler(1L, pageable);
 
         // Then
-        List<CommentDto> content = result.getContent();
-        for (CommentDto commentDto : content) {
+        List<Comment> content = result.getContent();
+        for (Comment c : content) {
             assertAll(
-                    () -> assertEquals(comment.getId(), commentDto.getCommentId()),
-                    () -> assertEquals(comment.getContent(), commentDto.getContent())
+                    () -> assertEquals(comment.getId(), c.getId()),
+                    () -> assertEquals(comment.getContent(), c.getContent())
             );
         }
 
@@ -118,8 +107,6 @@ class CommentServiceTest {
 
         given(comment.getMember())
                 .willReturn(member);
-        given(comment.getScheduler())
-                .willReturn(scheduler);
         given(comment.getContent())
                 .willReturn("test2");
 
@@ -127,11 +114,11 @@ class CommentServiceTest {
                 .willReturn(Optional.of(comment));
 
         // When
-        CommentDto commentDto = commentService.updateComment(1L, 1L, commentUpdateDto);
+        Comment updatedComment = commentDomainService.updateComment(1L, 1L, commentUpdateDto);
 
         // Then
         assertAll(
-                () -> assertEquals(commentUpdateDto.getContent(), commentDto.getContent())
+                () -> assertEquals(commentUpdateDto.getContent(), updatedComment.getContent())
         );
 
     }
@@ -145,7 +132,7 @@ class CommentServiceTest {
 
         // When
         CommentException exception = assertThrows(CommentException.class,
-                () -> commentService.updateComment(1L, 1L, commentUpdateDto));
+                () -> commentDomainService.updateComment(1L, 1L, commentUpdateDto));
 
         // Then
         assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());
@@ -161,19 +148,17 @@ class CommentServiceTest {
 
         given(comment.getMember())
                 .willReturn(member);
-        given(comment.getScheduler())
-                .willReturn(scheduler);
 
         given(commentRepository.findById(anyLong()))
                 .willReturn(Optional.of(comment));
 
         // When
-        CommentDto commentDto = commentService.deleteComment(1L, 1L);
+        Comment deletedComment = commentDomainService.deleteComment(1L, 1L);
 
         // Then
         assertAll(
-                () -> assertEquals(comment.getId(), commentDto.getCommentId()),
-                () -> assertEquals(comment.getContent(), commentDto.getContent())
+                () -> assertEquals(comment.getId(), deletedComment.getId()),
+                () -> assertEquals(comment.getContent(), deletedComment.getContent())
         );
 
     }
@@ -187,7 +172,7 @@ class CommentServiceTest {
 
         // When
         CommentException exception = assertThrows(CommentException.class,
-                () -> commentService.deleteComment(1L, 1L));
+                () -> commentDomainService.deleteComment(1L, 1L));
 
         // Then
         assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());
