@@ -5,6 +5,7 @@ import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
 import com.lsh.scheduler_dev.module.comment.dto.response.CommentDto;
+import com.lsh.scheduler_dev.module.comment.facade.CommentFacade;
 import com.lsh.scheduler_dev.module.comment.service.CommentService;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
+    private final CommentFacade commentFacade;
 
     @PostMapping("/{schedulerId}")
     public ResponseEntity<CommentDto> createComment(
@@ -25,7 +27,7 @@ public class CommentController {
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             @Valid @RequestBody CommentCreateDto commentCreateDto
     ) {
-        return ResponseEntity.ok(commentService
+        return ResponseEntity.ok(commentFacade
                 .saveComment(schedulerId, memberAuthDto.getMemberId(), commentCreateDto));
     }
 
@@ -53,7 +55,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto
     ) {
-        return ResponseEntity.ok(commentService.deleteComment(commentId, memberAuthDto.getMemberId()));
+        return ResponseEntity.ok(commentFacade.deleteComment(commentId, memberAuthDto.getMemberId()));
     }
 
 }

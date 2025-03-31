@@ -2,7 +2,6 @@ package com.lsh.scheduler_dev.module.scheduler.service;
 
 import com.lsh.scheduler_dev.common.response.ListResponse;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
-import com.lsh.scheduler_dev.module.member.service.MemberService;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
@@ -19,12 +18,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SchedulerService {
     private final SchedulerRepository schedulerRepository;
-    private final MemberService memberService;
 
-    @Transactional
-    public SchedulerDto saveScheduler(Long memberId, SchedulerCreateDto dto) {
-        Member member = memberService.findById(memberId);
-
+    public SchedulerDto saveScheduler(Member member, SchedulerCreateDto dto) {
         Scheduler savedScheduler = schedulerRepository.save(Scheduler.builder()
                 .member(member)
                 .title(dto.getTitle())

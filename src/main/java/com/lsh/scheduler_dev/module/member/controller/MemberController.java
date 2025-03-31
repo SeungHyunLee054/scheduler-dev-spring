@@ -59,7 +59,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateMember(memberAuthDto.getMemberId(), memberUpdateDto));
     }
 
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping
     public ResponseEntity<MemberDto> deleteMember(
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             HttpServletRequest request

@@ -6,6 +6,7 @@ import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
 import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
+import com.lsh.scheduler_dev.module.scheduler.facade.SchedulerFacade;
 import com.lsh.scheduler_dev.module.scheduler.service.SchedulerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +20,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SchedulerController {
     private final SchedulerService schedulerService;
+    private final SchedulerFacade schedulerFacade;
 
     @PostMapping
     public ResponseEntity<SchedulerDto> createScheduler(
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             @Valid @RequestBody SchedulerCreateDto schedulerCreateDto
     ) {
-        return ResponseEntity.ok(schedulerService.saveScheduler(memberAuthDto.getMemberId(), schedulerCreateDto));
+        return ResponseEntity.ok(schedulerFacade.saveScheduler(memberAuthDto.getMemberId(), schedulerCreateDto));
     }
 
     @GetMapping

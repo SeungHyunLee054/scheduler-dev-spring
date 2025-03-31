@@ -3,6 +3,7 @@ package com.lsh.scheduler_dev.common.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsh.scheduler_dev.common.exception.dto.ErrorResponse;
 import com.lsh.scheduler_dev.common.filter.exception.FilterException;
+import com.lsh.scheduler_dev.common.log.error.LogErrorUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,8 +27,8 @@ public class SessionExceptionFilter extends OncePerRequestFilter {
         try {
             doFilter(request, response, filterChain);
         } catch (FilterException e) {
-            log.error(e.getMessage(), e);
-            log.error(Arrays.toString(e.getStackTrace()));
+            log.error("예외 발생: {} (ErrorCode: {})", e.getMessage(), e.getErrorCode());
+            LogErrorUtils.logError(e);
             response.setStatus(e.getHttpStatus().value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
