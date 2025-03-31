@@ -31,9 +31,9 @@ public class CommentController {
                 .saveComment(schedulerId, memberAuthDto.getMemberId(), commentCreateDto));
     }
 
-    @GetMapping("/{schedulerId}")
+    @GetMapping
     public ResponseEntity<ListResponse<CommentDto>> getComments(
-            @PathVariable Long schedulerId,
+            @RequestParam Long schedulerId,
             @RequestParam(defaultValue = "0") Integer pageIdx,
             @RequestParam(defaultValue = "10") Integer pageSize
     ) {
