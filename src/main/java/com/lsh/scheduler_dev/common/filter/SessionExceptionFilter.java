@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Slf4j
 public class SessionExceptionFilter extends OncePerRequestFilter {

@@ -1,7 +1,6 @@
 package com.lsh.scheduler_dev.module.comment.service;
 
 import com.lsh.scheduler_dev.common.response.ListResponse;
-import com.lsh.scheduler_dev.common.utils.password.PasswordUtils;
 import com.lsh.scheduler_dev.module.comment.domain.model.Comment;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
@@ -36,6 +35,21 @@ class CommentServiceTest {
     @Mock
     private CommentRepository commentRepository;
 
+    @Mock
+    private Member member;
+
+    @Mock
+    private Scheduler scheduler;
+
+    @Mock
+    private Comment comment;
+
+    @Mock
+    private CommentCreateDto commentCreateDto;
+
+    @Mock
+    private CommentUpdateDto commentUpdateDto;
+
     @InjectMocks
     private CommentService commentService;
 
@@ -43,10 +57,10 @@ class CommentServiceTest {
     @DisplayName("댓글 생성 성공")
     void success_saveComment() {
         // Given
-        Member member = getMember();
-        Scheduler scheduler = getScheduler();
-        Comment comment = getComment();
-        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+        given(comment.getMember())
+                .willReturn(member);
+        given(comment.getScheduler())
+                .willReturn(scheduler);
 
         given(commentRepository.save(any()))
                 .willReturn(comment);
@@ -67,9 +81,13 @@ class CommentServiceTest {
     @DisplayName("일정의 모든 댓글 조회 성공")
     void success_getAllCommentsByScheduler() {
         // Given
-        Comment comment = getComment();
         Pageable pageable = PageRequest.of(0, 10);
         List<Comment> list = List.of(comment, comment);
+
+        given(comment.getMember())
+                .willReturn(member);
+        given(comment.getScheduler())
+                .willReturn(scheduler);
 
         given(commentRepository.findAllBySchedulerIdOrderByModifiedAtDesc(anyLong(), any()))
                 .willReturn(new PageImpl<>(list, pageable, list.size()));
@@ -92,11 +110,21 @@ class CommentServiceTest {
     @DisplayName("댓글 수정 성공")
     void success_updateComment() {
         // Given
-        Comment comment = getComment();
-        CommentUpdateDto commentUpdateDto = new CommentUpdateDto("test2");
+        given(commentUpdateDto.getContent())
+                .willReturn("test2");
+
+        given(member.getId())
+                .willReturn(1L);
+
+        given(comment.getMember())
+                .willReturn(member);
+        given(comment.getScheduler())
+                .willReturn(scheduler);
+        given(comment.getContent())
+                .willReturn("test2");
 
         given(commentRepository.findById(anyLong()))
-                .willReturn(Optional.ofNullable(comment));
+                .willReturn(Optional.of(comment));
 
         // When
         CommentDto commentDto = commentService.updateComment(1L, 1L, commentUpdateDto);
@@ -112,8 +140,6 @@ class CommentServiceTest {
     @DisplayName("댓글 수정 실패 - 유저 불일치")
     void fail_updateComment_userMismatch() {
         // Given
-        CommentUpdateDto commentUpdateDto = new CommentUpdateDto("test2");
-
         given(commentRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
@@ -130,7 +156,13 @@ class CommentServiceTest {
     @DisplayName("댓글 삭제 성공")
     void success_deleteComment() {
         // Given
-        Comment comment = getComment();
+        given(member.getId())
+                .willReturn(1L);
+
+        given(comment.getMember())
+                .willReturn(member);
+        given(comment.getScheduler())
+                .willReturn(scheduler);
 
         given(commentRepository.findById(anyLong()))
                 .willReturn(Optional.of(comment));
@@ -160,34 +192,6 @@ class CommentServiceTest {
         // Then
         assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());
 
-    }
-
-
-    private Comment getComment() {
-        return Comment.builder()
-                .id(1L)
-                .member(getMember())
-                .scheduler(getScheduler())
-                .content("test")
-                .build();
-    }
-
-    private Scheduler getScheduler() {
-        return Scheduler.builder()
-                .id(1L)
-                .title("test")
-                .content("test")
-                .member(getMember())
-                .build();
-    }
-
-    private Member getMember() {
-        return Member.builder()
-                .id(1L)
-                .name("test")
-                .email("test@test")
-                .password(PasswordUtils.encryptPassword("testtest"))
-                .build();
     }
 
 }

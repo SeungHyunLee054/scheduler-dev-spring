@@ -28,13 +28,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private MemberCreateDto memberCreateDto;
+
+    @Mock
+    private MemberSignInDto memberSignInDto;
+
+    @Mock
+    private MemberUpdateDto memberUpdateDto;
+
+    @Mock
+    private Member member;
 
     @InjectMocks
     private MemberService memberService;
@@ -43,12 +54,25 @@ class MemberServiceTest {
     @DisplayName("회원 가입 성공")
     void success_saveMember() {
         // Given
-        MemberCreateDto memberCreateDto = new MemberCreateDto("test", "test@test", "testtest");
+        given(memberCreateDto.getName())
+                .willReturn("test");
+        given(memberCreateDto.getEmail())
+                .willReturn("test@test");
+        given(memberCreateDto.getPassword())
+                .willReturn("testtest");
 
         given(memberRepository.existsByEmail(any()))
                 .willReturn(false);
-        given(memberRepository.save(any()))
-                .willReturn(getMember());
+
+        given(member.getId())
+                .willReturn(1L);
+        given(member.getName())
+                .willReturn("test");
+        given(member.getEmail())
+                .willReturn("test@test");
+
+        given(memberRepository.save(any(Member.class)))
+                .willReturn(member);
 
         // When
         MemberDto memberDto = memberService.saveMember(memberCreateDto);
@@ -57,8 +81,8 @@ class MemberServiceTest {
         verify(memberRepository, times(1)).save(any());
         assertAll(
                 () -> assertEquals(1L, memberDto.getMemberId()),
-                () -> assertEquals(memberCreateDto.getName(), memberDto.getName()),
-                () -> assertEquals(memberCreateDto.getEmail(), memberDto.getEmail())
+                () -> assertEquals("test", memberDto.getName()),
+                () -> assertEquals("test@test", memberDto.getEmail())
         );
 
     }
@@ -67,8 +91,6 @@ class MemberServiceTest {
     @DisplayName("회원 가입 실패 - 이미 존재하는 이메일")
     void fail_saveMember_alreadyExistEmail() {
         // Given
-        MemberCreateDto memberCreateDto = new MemberCreateDto("test", "test@test", "testtest");
-
         given(memberRepository.existsByEmail(any()))
                 .willReturn(true);
 
@@ -85,10 +107,18 @@ class MemberServiceTest {
     @DisplayName("로그인 성공")
     void success_signIn() {
         // Given
-        MemberSignInDto memberSignInDto = new MemberSignInDto("test@test", "testtest");
+        given(memberSignInDto.getEmail())
+                .willReturn("test@test");
+        given(memberSignInDto.getPassword())
+                .willReturn("testtest");
+
+        given(member.getEmail())
+                .willReturn("test@test");
+        given(member.getPassword())
+                .willReturn(PasswordUtils.encryptPassword("testtest"));
 
         given(memberRepository.findByEmail(any()))
-                .willReturn(Optional.ofNullable(getMember()));
+                .willReturn(Optional.of(member));
 
         // When
         MemberAuthDto memberAuthDto = memberService.signIn(memberSignInDto);
@@ -104,8 +134,6 @@ class MemberServiceTest {
     @DisplayName("로그인 실패 - 유저를 찾을 수 없음")
     void fail_signIn_memberNotFound() {
         // Given
-        MemberSignInDto memberSignInDto = new MemberSignInDto("test@test", "testtest");
-
         given(memberRepository.findByEmail(any()))
                 .willReturn(Optional.empty());
 
@@ -123,14 +151,13 @@ class MemberServiceTest {
     void success_getAllMembers() {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
-        Member member = getMember();
         List<Member> list = List.of(member, member);
 
         given(memberRepository.findAllByOrderByModifiedAtDesc(any()))
                 .willReturn(new PageImpl<>(list, pageable, list.size()));
 
         // When
-        ListResponse<MemberDto> result = memberService.getAllMembers(pageable);
+        ListResponse<MemberDto> result = memberService.getAllMembers(any());
 
         // Then
         List<MemberDto> content = result.getContent();
@@ -148,19 +175,26 @@ class MemberServiceTest {
     @DisplayName("유저 수정 성공")
     void success_updateMember() {
         // Given
-        Member member = getMember();
-        MemberUpdateDto memberUpdateDto = new MemberUpdateDto("t1", "test2test");
+        given(memberUpdateDto.getName())
+                .willReturn("test2");
+        given(memberUpdateDto.getPassword())
+                .willReturn("testtest2");
+
+        given(member.getId())
+                .willReturn(1L);
+        given(member.getName())
+                .willReturn("test2");
 
         given(memberRepository.findById(anyLong()))
-                .willReturn(Optional.ofNullable(member));
+                .willReturn(Optional.of(member));
 
         // When
-        MemberDto memberDto = memberService.updateMember(1L, memberUpdateDto);
+        MemberDto memberDto = memberService.updateMember(anyLong(), memberUpdateDto);
 
         // Then
         assertAll(
                 () -> assertEquals(1L, memberDto.getMemberId()),
-                () -> assertEquals(memberUpdateDto.getName(), memberDto.getName())
+                () -> assertEquals("test2", memberDto.getName())
         );
 
     }
@@ -169,14 +203,12 @@ class MemberServiceTest {
     @DisplayName("유저 수정 실패 - 유저를 찾을 수 없음")
     void fail_updateMember_memberNotFound() {
         // Given
-        MemberUpdateDto memberUpdateDto = new MemberUpdateDto("t1", "test2test");
-
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
         // When
         MemberException exception =
-                assertThrows(MemberException.class, () -> memberService.updateMember(1L, memberUpdateDto));
+                assertThrows(MemberException.class, () -> memberService.updateMember(anyLong(), memberUpdateDto));
 
         // Then
         assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());
@@ -187,13 +219,18 @@ class MemberServiceTest {
     @DisplayName("유저 삭제 성공")
     void success_deleteMember() {
         // Given
-        Member member = getMember();
+        given(member.getId())
+                .willReturn(1L);
+        given(member.getName())
+                .willReturn("test");
+        given(member.getEmail())
+                .willReturn("test@test");
 
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(member));
 
         // When
-        MemberDto memberDto = memberService.deleteMember(1L);
+        MemberDto memberDto = memberService.deleteMember(anyLong());
 
         // Then
         assertAll(
@@ -213,20 +250,11 @@ class MemberServiceTest {
 
         // When
         MemberException exception =
-                assertThrows(MemberException.class, () -> memberService.deleteMember(1L));
+                assertThrows(MemberException.class, () -> memberService.deleteMember(anyLong()));
 
         // Then
         assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());
 
     }
 
-
-    private Member getMember() {
-        return Member.builder()
-                .id(1L)
-                .name("test")
-                .email("test@test")
-                .password(PasswordUtils.encryptPassword("testtest"))
-                .build();
-    }
 }

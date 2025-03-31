@@ -12,6 +12,7 @@ import com.lsh.scheduler_dev.module.member.dto.response.MemberDto;
 import com.lsh.scheduler_dev.module.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -20,7 +21,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,6 +41,21 @@ class MemberControllerTest {
     @MockitoBean
     private SessionExpiredConstant sessionExpiredConstant;
 
+    @Mock
+    private MemberDto memberDto;
+
+    @Mock
+    private MemberCreateDto memberCreateDto;
+
+    @Mock
+    private MemberSignInDto memberSignInDto;
+
+    @Mock
+    private MemberUpdateDto memberUpdateDto;
+
+    @Mock
+    private MemberAuthDto memberAuthDto;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -52,10 +67,22 @@ class MemberControllerTest {
     @DisplayName("회원 가입 성공")
     void success_signUp() throws Exception {
         // Given
-        MemberCreateDto memberCreateDto = new MemberCreateDto("test", "test@test", "testtest");
+        when(memberCreateDto.getName())
+                .thenReturn("test");
+        when(memberCreateDto.getEmail())
+                .thenReturn("test@test.com");
+        when(memberCreateDto.getPassword())
+                .thenReturn("testtest");
+
+        when(memberDto.getMemberId())
+                .thenReturn(1L);
+        when(memberDto.getName())
+                .thenReturn("test");
+        when(memberDto.getEmail())
+                .thenReturn("test@test");
 
         when(memberService.saveMember(any()))
-                .thenReturn(getMemberDto());
+                .thenReturn(memberDto);
 
         // When
         ResultActions perform = mockMvc.perform(post("/members/signup")
@@ -80,9 +107,18 @@ class MemberControllerTest {
     @DisplayName("로그인 성공")
     void success_signIn() throws Exception {
         // Given
-        MemberSignInDto memberSignInDto = new MemberSignInDto("test@test", "testtest");
         MockHttpSession session = new MockHttpSession();
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
+
+        when(memberSignInDto.getEmail())
+                .thenReturn("test@test");
+        when(memberSignInDto.getPassword())
+                .thenReturn("testtest");
+
+        when(memberAuthDto.getMemberId())
+                .thenReturn(1L);
+        when(memberAuthDto.getEmail())
+                .thenReturn("test@test");
+
 
         when(memberService.signIn(any()))
                 .thenReturn(memberAuthDto);
@@ -112,7 +148,6 @@ class MemberControllerTest {
     @DisplayName("유저 전체 조회 성공")
     void success_getAllMembers() throws Exception {
         // Given
-        MemberDto memberDto = getMemberDto();
         List<MemberDto> list = List.of(memberDto, memberDto);
 
         when(memberService.getAllMembers(any()))
@@ -131,11 +166,11 @@ class MemberControllerTest {
                     .andExpectAll(
                             status().isOk(),
                             jsonPath("$.content.[" + i + "].memberId")
-                                    .value(1L),
+                                    .value(memberDto.getMemberId()),
                             jsonPath("$.content.[" + i + "].name")
-                                    .value("test"),
+                                    .value(memberDto.getName()),
                             jsonPath("$.content.[" + i + "].email")
-                                    .value("test@test")
+                                    .value(memberDto.getEmail())
                     );
         }
 
@@ -145,9 +180,20 @@ class MemberControllerTest {
     @DisplayName("유저 수정 성공")
     void success_updateMember() throws Exception {
         // Given
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
-        MemberDto memberDto = getMemberDto();
-        MemberUpdateDto memberUpdateDto = new MemberUpdateDto("test", "testtest");
+        when(memberUpdateDto.getName())
+                .thenReturn("t2");
+        when(memberUpdateDto.getPassword())
+                .thenReturn("testtest2");
+
+        when(memberAuthDto.getMemberId())
+                .thenReturn(1L);
+        when(memberAuthDto.getEmail())
+                .thenReturn("test@test");
+
+        when(memberDto.getMemberId())
+                .thenReturn(1L);
+        when(memberDto.getName())
+                .thenReturn("t2");
 
         when(memberService.updateMember(anyLong(), any()))
                 .thenReturn(memberDto);
@@ -165,7 +211,7 @@ class MemberControllerTest {
                         jsonPath("$.memberId")
                                 .value(1L),
                         jsonPath("$.name")
-                                .value("test")
+                                .value("t2")
                 );
 
     }
@@ -174,14 +220,21 @@ class MemberControllerTest {
     @DisplayName("유저 삭제 성공")
     void success_deleteMember() throws Exception {
         // Given
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
-        MemberDto memberDto = getMemberDto();
+        when(memberAuthDto.getMemberId())
+                .thenReturn(1L);
+        when(memberAuthDto.getEmail())
+                .thenReturn("test@test");
+
+        when(memberDto.getMemberId())
+                .thenReturn(1L);
+        when(memberDto.getName())
+                .thenReturn("test");
 
         when(memberService.deleteMember(anyLong()))
                 .thenReturn(memberDto);
 
         // When
-        ResultActions perform = mockMvc.perform(delete("/members/{memberId}", memberDto.getMemberId())
+        ResultActions perform = mockMvc.perform(delete("/members")
                 .sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto)
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -195,25 +248,6 @@ class MemberControllerTest {
                                 .value("test")
                 );
 
-    }
-
-    private MemberAuthDto getMemberAuthDto() {
-        return MemberAuthDto.builder()
-                .memberId(1L)
-                .email("test@test")
-                .build();
-    }
-
-    private MemberDto getMemberDto() {
-        LocalDateTime now = LocalDateTime.now();
-
-        return MemberDto.builder()
-                .memberId(1L)
-                .name("test")
-                .email("test@test")
-                .createdAt(now)
-                .modifiedAt(now)
-                .build();
     }
 
 }

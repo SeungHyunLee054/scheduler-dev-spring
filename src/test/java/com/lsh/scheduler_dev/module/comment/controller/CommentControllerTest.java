@@ -11,6 +11,7 @@ import com.lsh.scheduler_dev.module.comment.service.CommentService;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -36,6 +37,18 @@ class CommentControllerTest {
     @MockitoBean
     private CommentFacade commentFacade;
 
+    @Mock
+    private MemberAuthDto memberAuthDto;
+
+    @Mock
+    private CommentDto commentDto;
+
+    @Mock
+    private CommentCreateDto commentCreateDto;
+
+    @Mock
+    private CommentUpdateDto commentUpdateDto;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -46,9 +59,10 @@ class CommentControllerTest {
     @DisplayName("댓글 생성 성공")
     void success_createComment() throws Exception {
         // Given
-        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
-        CommentDto commentDto = getCommentDto();
+        when(commentDto.getCommentId())
+                .thenReturn(1L);
+        when(commentDto.getContent())
+                .thenReturn("test");
 
         when(commentFacade.saveComment(anyLong(), anyLong(), any()))
                 .thenReturn(commentDto);
@@ -63,6 +77,8 @@ class CommentControllerTest {
         perform.andDo(print())
                 .andExpectAll(
                         status().isOk(),
+                        jsonPath("$.commentId")
+                                .value(1L),
                         jsonPath("$.content")
                                 .value("test")
                 );
@@ -73,8 +89,12 @@ class CommentControllerTest {
     @DisplayName("해당 일정의 모든 댓글 조회 성공")
     void success_getAllCommentsByScheduler() throws Exception {
         // Given
-        CommentDto commentDto = getCommentDto();
-        List<CommentDto> list = List.of(commentDto);
+        List<CommentDto> list = List.of(commentDto, commentDto);
+
+        when(commentDto.getCommentId())
+                .thenReturn(1L);
+        when(commentDto.getContent())
+                .thenReturn("test");
 
         when(commentService.getAllCommentsByScheduler(anyLong(), any()))
                 .thenReturn(ListResponse.<CommentDto>builder()
@@ -104,13 +124,11 @@ class CommentControllerTest {
     @DisplayName("일정 수정 성공")
     void success_updateComment() throws Exception {
         // Given
-        CommentUpdateDto commentUpdateDto = new CommentUpdateDto("test2");
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
+        when(commentDto.getContent())
+                .thenReturn("test2");
 
         when(commentService.updateComment(anyLong(), anyLong(), any()))
-                .thenReturn(CommentDto.builder()
-                        .content("test2")
-                        .build());
+                .thenReturn(commentDto);
 
         // When
         ResultActions perform = mockMvc.perform(put("/comments/{commentId}", 1L)
@@ -132,9 +150,6 @@ class CommentControllerTest {
     @DisplayName("댓글 삭제 성공")
     void success_deleteComment() throws Exception {
         // Given
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
-        CommentDto commentDto = getCommentDto();
-
         when(commentFacade.deleteComment(anyLong(), anyLong()))
                 .thenReturn(commentDto);
 
@@ -150,22 +165,6 @@ class CommentControllerTest {
                                 .value(commentDto.getCommentId())
                 );
 
-    }
-
-    private MemberAuthDto getMemberAuthDto() {
-        return MemberAuthDto.builder()
-                .memberId(1L)
-                .email("test@test")
-                .build();
-    }
-
-    private CommentDto getCommentDto() {
-        return CommentDto.builder()
-                .commentId(1L)
-                .schedulerId(1L)
-                .memberId(1L)
-                .content("test")
-                .build();
     }
 
 }

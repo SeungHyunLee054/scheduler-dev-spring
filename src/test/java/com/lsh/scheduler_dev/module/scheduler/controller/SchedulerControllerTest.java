@@ -10,6 +10,7 @@ import com.lsh.scheduler_dev.module.scheduler.facade.SchedulerFacade;
 import com.lsh.scheduler_dev.module.scheduler.service.SchedulerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -21,7 +22,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,6 +36,15 @@ class SchedulerControllerTest {
     @MockitoBean
     private SchedulerFacade schedulerFacade;
 
+    @Mock
+    private SchedulerUpdateDto schedulerUpdateDto;
+
+    @Mock
+    private SchedulerDto schedulerDto;
+
+    @Mock
+    private MemberAuthDto memberAuthDto;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -46,11 +55,21 @@ class SchedulerControllerTest {
     @DisplayName("일정 생성 성공")
     void success_createScheduler() throws Exception {
         // Given
-        SchedulerDto schedulerDto = getSchedulerDto();
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
+        when(schedulerDto.getSchedulerId())
+                .thenReturn(1L);
+        when(schedulerDto.getMemberId())
+                .thenReturn(1L);
+        when(schedulerDto.getMemberId())
+                .thenReturn(1L);
+        when(schedulerDto.getName())
+                .thenReturn("test");
+        when(schedulerDto.getTitle())
+                .thenReturn("test");
+        when(schedulerDto.getContent())
+                .thenReturn("test");
 
-        given(schedulerFacade.saveScheduler(any(), any()))
-                .willReturn(schedulerDto);
+        when(schedulerFacade.saveScheduler(any(), any()))
+                .thenReturn(schedulerDto);
 
         // When
         ResultActions perform = mockMvc.perform(post("/schedulers")
@@ -82,7 +101,17 @@ class SchedulerControllerTest {
     @DisplayName("모든 일정 조회 성공")
     void success_getAllSchedulers() throws Exception {
         // Given
-        SchedulerDto schedulerDto = getSchedulerDto();
+        when(schedulerDto.getSchedulerId())
+                .thenReturn(1L);
+        when(schedulerDto.getMemberId())
+                .thenReturn(1L);
+        when(schedulerDto.getName())
+                .thenReturn("test");
+        when(schedulerDto.getTitle())
+                .thenReturn("test");
+        when(schedulerDto.getContent())
+                .thenReturn("test");
+
         List<SchedulerDto> list = List.of(schedulerDto, schedulerDto);
 
         when(schedulerService.getAllSchedulers(any()))
@@ -122,14 +151,18 @@ class SchedulerControllerTest {
     @DisplayName("일정 수정 성공")
     void success_updateScheduler() throws Exception {
         // Given
-        SchedulerUpdateDto schedulerUpdateDto = new SchedulerUpdateDto("test2", "test2");
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
+        when(schedulerUpdateDto.getTitle())
+                .thenReturn("test2");
+        when(schedulerUpdateDto.getContent())
+                .thenReturn("test2");
+
+        when(schedulerDto.getTitle())
+                .thenReturn("test2");
+        when(schedulerDto.getContent())
+                .thenReturn("test2");
 
         when(schedulerService.updateScheduler(anyLong(), anyLong(), any()))
-                .thenReturn(SchedulerDto.builder()
-                        .title("test2")
-                        .content("test2")
-                        .build());
+                .thenReturn(schedulerDto);
 
         // When
         ResultActions perform = mockMvc.perform(put("/schedulers/{schedulerId}", 1L)
@@ -153,9 +186,6 @@ class SchedulerControllerTest {
     @DisplayName("일정 삭제 성공")
     void success_deleteScheduler() throws Exception {
         // Given
-        MemberAuthDto memberAuthDto = getMemberAuthDto();
-        SchedulerDto schedulerDto = getSchedulerDto();
-
         when(schedulerService.deleteScheduler(anyLong(), anyLong()))
                 .thenReturn(schedulerDto);
 
@@ -173,24 +203,6 @@ class SchedulerControllerTest {
                                 .value(memberAuthDto.getMemberId())
                 );
 
-    }
-
-    private MemberAuthDto getMemberAuthDto() {
-        return MemberAuthDto.builder()
-                .memberId(1L)
-                .email("test@test")
-                .build();
-    }
-
-    private SchedulerDto getSchedulerDto() {
-        return SchedulerDto.builder()
-                .schedulerId(1L)
-                .memberId(1L)
-                .name("test")
-                .title("test")
-                .content("test")
-                .commentCount(0)
-                .build();
     }
 
 }

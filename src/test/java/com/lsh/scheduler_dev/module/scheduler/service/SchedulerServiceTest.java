@@ -1,7 +1,6 @@
 package com.lsh.scheduler_dev.module.scheduler.service;
 
 import com.lsh.scheduler_dev.common.response.ListResponse;
-import com.lsh.scheduler_dev.common.utils.password.PasswordUtils;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +34,18 @@ class SchedulerServiceTest {
     @Mock
     private SchedulerRepository schedulerRepository;
 
+    @Mock
+    private SchedulerCreateDto schedulerCreateDto;
+
+    @Mock
+    private SchedulerUpdateDto schedulerUpdateDto;
+
+    @Mock
+    private Member member;
+
+    @Mock
+    private Scheduler scheduler;
+
     @InjectMocks
     private SchedulerService schedulerService;
 
@@ -43,11 +53,15 @@ class SchedulerServiceTest {
     @DisplayName("일정 생성 성공")
     void success_saveScheduler() {
         // Given
-        Member member = getMember();
-        SchedulerCreateDto schedulerCreateDto = new SchedulerCreateDto("test", "test");
+        given(scheduler.getTitle())
+                .willReturn("test");
+        given(scheduler.getContent())
+                .willReturn("test");
+        given(scheduler.getMember())
+                .willReturn(member);
 
         given(schedulerRepository.save(any()))
-                .willReturn(getScheduler());
+                .willReturn(scheduler);
 
         // When
         SchedulerDto schedulerDto = schedulerService.saveScheduler(member, schedulerCreateDto);
@@ -55,8 +69,8 @@ class SchedulerServiceTest {
         // Then
         verify(schedulerRepository, times(1)).save(any());
         assertAll(
-                () -> assertEquals(schedulerDto.getTitle(), schedulerCreateDto.getTitle()),
-                () -> assertEquals(schedulerDto.getContent(), schedulerCreateDto.getContent())
+                () -> assertEquals("test", schedulerDto.getTitle()),
+                () -> assertEquals("test", schedulerDto.getContent())
         );
 
     }
@@ -66,14 +80,15 @@ class SchedulerServiceTest {
     void success_getAllSchedulers() {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
-        Scheduler scheduler = getScheduler();
         List<Scheduler> list = List.of(scheduler, scheduler);
 
+        given(scheduler.getMember())
+                .willReturn(member);
         given(schedulerRepository.findAllByOrderByModifiedAtDesc(any()))
                 .willReturn(new PageImpl<>(list, pageable, list.size()));
 
         // When
-        ListResponse<SchedulerDto> result = schedulerService.getAllSchedulers(pageable);
+        ListResponse<SchedulerDto> result = schedulerService.getAllSchedulers(any());
 
         // Then
         List<SchedulerDto> content = result.getContent();
@@ -91,10 +106,24 @@ class SchedulerServiceTest {
     @DisplayName("일정 수정 성공")
     void success_updateScheduler() {
         // Given
-        SchedulerUpdateDto schedulerUpdateDto = new SchedulerUpdateDto("test2", "test2");
+        given(schedulerUpdateDto.getTitle())
+                .willReturn("test2");
+        given(schedulerUpdateDto.getContent())
+                .willReturn("test2");
+
+        given(member.getId())
+                .willReturn(1L);
+
+        given(scheduler.getMember())
+                .willReturn(member);
+        given(scheduler.getTitle())
+                .willReturn("test2");
+        given(scheduler.getContent())
+                .willReturn("test2");
 
         given(schedulerRepository.findById(anyLong()))
-                .willReturn(Optional.ofNullable(getScheduler()));
+                .willReturn(Optional.of(scheduler));
+
 
         // When
         SchedulerDto schedulerDto = schedulerService.updateScheduler(1L, 1L, schedulerUpdateDto);
@@ -111,8 +140,6 @@ class SchedulerServiceTest {
     @DisplayName("일정 수정 실패 - 유저 불일치")
     void fail_updateScheduler_userMismatch() {
         // Given
-        SchedulerUpdateDto schedulerUpdateDto = new SchedulerUpdateDto("test2", "test2");
-
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
@@ -129,22 +156,27 @@ class SchedulerServiceTest {
     @DisplayName("일정 삭제 성공")
     void success_deleteScheduler() {
         // Given
-        Scheduler scheduler = getScheduler();
-        Member member = getMember();
+        given(member.getId())
+                .willReturn(1L);
+
+        given(scheduler.getId())
+                .willReturn(1L);
+        given(scheduler.getMember())
+                .willReturn(member);
 
         given(schedulerRepository.findById(anyLong()))
-                .willReturn(Optional.ofNullable(scheduler));
+                .willReturn(Optional.of(scheduler));
 
         // When
         SchedulerDto schedulerDto =
-                schedulerService.deleteScheduler(member.getId(), Objects.requireNonNull(scheduler).getId());
+                schedulerService.deleteScheduler(1L, 1L);
 
         // Then
         assertAll(
-                () -> assertEquals(schedulerDto.getSchedulerId(), scheduler.getId()),
-                () -> assertEquals(schedulerDto.getName(), scheduler.getMember().getName()),
-                () -> assertEquals(schedulerDto.getTitle(), scheduler.getTitle()),
-                () -> assertEquals(schedulerDto.getContent(), scheduler.getContent())
+                () -> assertEquals(scheduler.getId(), schedulerDto.getSchedulerId()),
+                () -> assertEquals(scheduler.getMember().getName(), schedulerDto.getName()),
+                () -> assertEquals(scheduler.getTitle(), schedulerDto.getTitle()),
+                () -> assertEquals(scheduler.getContent(), schedulerDto.getContent())
         );
 
     }
@@ -163,24 +195,6 @@ class SchedulerServiceTest {
         // Then
         assertEquals(SchedulerExceptionCode.USER_MISMATCH, exception.getErrorCode());
 
-    }
-
-    private Scheduler getScheduler() {
-        return Scheduler.builder()
-                .id(1L)
-                .title("test")
-                .content("test")
-                .member(getMember())
-                .build();
-    }
-
-    private Member getMember() {
-        return Member.builder()
-                .id(1L)
-                .name("test")
-                .email("test@test")
-                .password(PasswordUtils.encryptPassword("testtest"))
-                .build();
     }
 
 }
