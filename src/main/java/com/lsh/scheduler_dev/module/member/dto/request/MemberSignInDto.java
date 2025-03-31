@@ -17,6 +17,6 @@ public class MemberSignInDto {
 
     @NotNull(message = "비밀번호는 필수 입력 값입니다.")
     @NotBlank(message = "비밀번호는 공백이 아니어야 합니다.")
-    @Size(max = 8, message = "비밀번호는 8글자 이상이어야 합니다.")
+    @Size(min = 8, message = "비밀번호는 8글자 이상이어야 합니다.")
     private String password;
 }
