@@ -2,6 +2,7 @@ package com.lsh.scheduler_dev.common.exception.handler;
 
 import com.lsh.scheduler_dev.common.exception.BaseException;
 import com.lsh.scheduler_dev.common.exception.dto.ErrorResponse;
+import com.lsh.scheduler_dev.common.log.error.LogErrorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -18,8 +18,8 @@ import java.util.List;
 public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> CustomExceptionHandler(BaseException e) {
-        log.error(e.getMessage());
-        log.error(Arrays.toString(e.getStackTrace()));
+        log.error("예외 발생: {} (ErrorCode: {})", e.getMessage(), e.getErrorCode());
+        LogErrorUtils.logError(e);
 
         return ResponseEntity.status(e.getHttpStatus())
                 .body(ErrorResponse.builder()
