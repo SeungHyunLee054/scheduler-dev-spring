@@ -15,6 +15,13 @@ public class SchedulerFacade {
     private final SchedulerService schedulerService;
     private final MemberService memberService;
 
+    /**
+     * 일정 저장
+     *
+     * @param memberId           유저 id
+     * @param schedulerCreateDto 작성하려는 일정 내용
+     * @return 일정 정보
+     */
     @Transactional
     public SchedulerDto saveScheduler(Long memberId, SchedulerCreateDto schedulerCreateDto) {
         Member member = memberService.findById(memberId);

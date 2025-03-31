@@ -18,6 +18,14 @@ public class CommentFacade {
     private final MemberService memberService;
     private final SchedulerService schedulerService;
 
+    /**
+     * 댓글 저장
+     *
+     * @param schedulerId      일정 id
+     * @param memberId         유저 id
+     * @param commentCreateDto 작성하려는 댓글 내용
+     * @return 댓글 정보
+     */
     @Transactional
     public CommentDto saveComment(Long schedulerId, Long memberId, CommentCreateDto commentCreateDto) {
         Member member = memberService.findById(memberId);
@@ -30,6 +38,13 @@ public class CommentFacade {
         return commentDto;
     }
 
+    /**
+     * 댓글 삭제
+     *
+     * @param commentId 댓글 id
+     * @param memberId  유저 id
+     * @return 삭제된 댓글 정보
+     */
     @Transactional
     public CommentDto deleteComment(Long commentId, Long memberId) {
         CommentDto commentDto = commentService.deleteComment(commentId, memberId);
