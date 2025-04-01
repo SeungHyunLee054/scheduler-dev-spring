@@ -24,7 +24,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsh.scheduler_dev.common.constants.SessionConstants;
 import com.lsh.scheduler_dev.common.constants.SessionExpiredConstant;
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.member.dto.request.MemberCreateDto;
 import com.lsh.scheduler_dev.module.member.dto.request.MemberSignInDto;
@@ -39,6 +40,12 @@ class MemberControllerTest {
 
 	@MockitoBean
 	private SessionExpiredConstant sessionExpiredConstant;
+
+	@Mock
+	private CommonResponse<MemberDto> response;
+
+	@Mock
+	private CommonResponses<MemberDto> responses;
 
 	@Mock
 	private MemberDto memberDto;
@@ -72,6 +79,11 @@ class MemberControllerTest {
 		when(memberCreateDto.getPassword())
 			.thenReturn("testtest");
 
+		when(response.getMessage())
+			.thenReturn("회원가입 성공");
+		when(response.getResult())
+			.thenReturn(memberDto);
+
 		when(memberDto.getMemberId())
 			.thenReturn(1L);
 		when(memberDto.getName())
@@ -80,7 +92,7 @@ class MemberControllerTest {
 			.thenReturn("test@test");
 
 		when(memberService.saveMember(any()))
-			.thenReturn(memberDto);
+			.thenReturn(response);
 
 		// When
 		ResultActions perform = mockMvc.perform(post("/members/signup")
@@ -91,11 +103,13 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isCreated(),
-				jsonPath("$.memberId")
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.memberId")
 					.value(1L),
-				jsonPath("$.name")
+				jsonPath("$.result.name")
 					.value("test"),
-				jsonPath("$.email")
+				jsonPath("$.result.email")
 					.value("test@test")
 			);
 
@@ -117,6 +131,9 @@ class MemberControllerTest {
 		when(memberAuthDto.getEmail())
 			.thenReturn("test@test");
 
+		when(response.getMessage())
+			.thenReturn("로그인 성공");
+
 		when(memberService.signIn(any()))
 			.thenReturn(memberAuthDto);
 
@@ -130,7 +147,10 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
-				content().string("logged in")
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result")
+					.value(session.getId())
 			);
 
 		MemberAuthDto result = (MemberAuthDto)session.getAttribute(SessionConstants.AUTHORIZATION);
@@ -147,10 +167,13 @@ class MemberControllerTest {
 		// Given
 		List<MemberDto> list = List.of(memberDto, memberDto);
 
+		when(responses.getMessage())
+			.thenReturn("유저 전체 조회 성공");
+		when(responses.getResult())
+			.thenReturn(list);
+
 		when(memberService.getAllMembers(any()))
-			.thenReturn(ListResponse.<MemberDto>builder()
-				.content(list)
-				.build());
+			.thenReturn(responses);
 
 		// When
 		ResultActions perform = mockMvc.perform(get("/members")
@@ -162,11 +185,13 @@ class MemberControllerTest {
 			perform.andDo(print())
 				.andExpectAll(
 					status().isOk(),
-					jsonPath("$.content.[" + i + "].memberId")
+					jsonPath("$.message")
+						.value(responses.getMessage()),
+					jsonPath("$.result.[" + i + "].memberId")
 						.value(memberDto.getMemberId()),
-					jsonPath("$.content.[" + i + "].name")
+					jsonPath("$.result.[" + i + "].name")
 						.value(memberDto.getName()),
-					jsonPath("$.content.[" + i + "].email")
+					jsonPath("$.result.[" + i + "].email")
 						.value(memberDto.getEmail())
 				);
 		}
@@ -192,8 +217,13 @@ class MemberControllerTest {
 		when(memberDto.getName())
 			.thenReturn("t2");
 
-		when(memberService.updateMember(anyLong(), any()))
+		when(response.getMessage())
+			.thenReturn("유저 수정 성공");
+		when(response.getResult())
 			.thenReturn(memberDto);
+
+		when(memberService.updateMember(anyLong(), any()))
+			.thenReturn(response);
 
 		// When
 		ResultActions perform = mockMvc.perform(put("/members")
@@ -205,9 +235,11 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
-				jsonPath("$.memberId")
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.memberId")
 					.value(1L),
-				jsonPath("$.name")
+				jsonPath("$.result.name")
 					.value("t2")
 			);
 
@@ -227,8 +259,13 @@ class MemberControllerTest {
 		when(memberDto.getName())
 			.thenReturn("test");
 
-		when(memberService.deleteMember(anyLong()))
+		when(response.getMessage())
+			.thenReturn("유저 삭제 성공");
+		when(response.getResult())
 			.thenReturn(memberDto);
+
+		when(memberService.deleteMember(anyLong()))
+			.thenReturn(response);
 
 		// When
 		ResultActions perform = mockMvc.perform(delete("/members")
@@ -239,9 +276,11 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
-				jsonPath("$.memberId")
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.memberId")
 					.value(1L),
-				jsonPath("$.name")
+				jsonPath("$.result.name")
 					.value("test")
 			);
 

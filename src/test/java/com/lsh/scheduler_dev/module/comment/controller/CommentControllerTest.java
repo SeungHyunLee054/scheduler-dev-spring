@@ -20,7 +20,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsh.scheduler_dev.common.constants.SessionConstants;
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.comment.application.CommentService;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
@@ -39,6 +40,12 @@ class CommentControllerTest {
 	private CommentDto commentDto;
 
 	@Mock
+	private CommonResponse<CommentDto> response;
+
+	@Mock
+	private CommonResponses<CommentDto> responses;
+
+	@Mock
 	private CommentCreateDto commentCreateDto;
 
 	@Mock
@@ -54,21 +61,37 @@ class CommentControllerTest {
 	@DisplayName("댓글 생성 성공")
 	void success_createComment() throws Exception {
 		// Given
-		when(commentDto.getCommentId()).thenReturn(1L);
-		when(commentDto.getContent()).thenReturn("test");
+		when(commentDto.getCommentId())
+			.thenReturn(1L);
+		when(commentDto.getContent())
+			.thenReturn("test");
 
-		when(commentService.saveComment(anyLong(), anyLong(), any())).thenReturn(commentDto);
+		when(response.getMessage())
+			.thenReturn("댓글 생성 성공");
+		when(response.getResult())
+			.thenReturn(commentDto);
+
+		when(commentService.saveComment(anyLong(), anyLong(), any()))
+			.thenReturn(response);
 
 		// When
-		ResultActions perform = mockMvc.perform(
-			post("/comments").sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(commentCreateDto))
-				.param("schedulerId", "1"));
+		ResultActions perform = mockMvc.perform(post("/comments")
+			.sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(commentCreateDto))
+			.param("schedulerId", "1"));
 
 		// Then
 		perform.andDo(print())
-			.andExpectAll(status().isCreated(), jsonPath("$.commentId").value(1L), jsonPath("$.content").value("test"));
+			.andExpectAll(
+				status().isCreated(),
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.commentId")
+					.value(1L),
+				jsonPath("$.result.content")
+					.value("test")
+			);
 
 	}
 
@@ -78,21 +101,37 @@ class CommentControllerTest {
 		// Given
 		List<CommentDto> list = List.of(commentDto, commentDto);
 
-		when(commentDto.getCommentId()).thenReturn(1L);
-		when(commentDto.getContent()).thenReturn("test");
+		when(commentDto.getCommentId())
+			.thenReturn(1L);
+		when(commentDto.getContent())
+			.thenReturn("test");
 
-		when(commentService.getAllCommentsByScheduler(anyLong(), any())).thenReturn(
-			ListResponse.<CommentDto>builder().content(list).build());
+		when(responses.getMessage())
+			.thenReturn("댓글 전체 조회 성공");
+		when(responses.getResult())
+			.thenReturn(list);
+
+		when(commentService.getAllCommentsByScheduler(anyLong(), any()))
+			.thenReturn(responses);
 
 		// When
-		ResultActions perform = mockMvc.perform(
-			get("/comments").param("schedulerId", "1").param("pageIdx", "0").param("pageSize", "10"));
+		ResultActions perform = mockMvc.perform(get("/comments")
+			.param("schedulerId", "1")
+			.param("pageIdx", "0")
+			.param("pageSize", "10"));
 
 		// Then
 		for (int i = 0; i < list.size(); i++) {
 			perform.andDo(print())
-				.andExpectAll(status().isOk(), jsonPath("$.content.[" + i + "].commentId").value(1L),
-					jsonPath("$.content.[" + i + "].content").value("test"));
+				.andExpectAll(
+					status().isOk(),
+					jsonPath("$.message")
+						.value(responses.getMessage()),
+					jsonPath("$.result.[" + i + "].commentId")
+						.value(1L),
+					jsonPath("$.result.[" + i + "].content")
+						.value("test")
+				);
 		}
 
 	}
@@ -101,18 +140,32 @@ class CommentControllerTest {
 	@DisplayName("일정 수정 성공")
 	void success_updateComment() throws Exception {
 		// Given
-		when(commentDto.getContent()).thenReturn("test2");
+		when(commentDto.getContent())
+			.thenReturn("test2");
 
-		when(commentService.updateComment(anyLong(), anyLong(), any())).thenReturn(commentDto);
+		when(response.getMessage())
+			.thenReturn("일정 수정 성공");
+		when(response.getResult())
+			.thenReturn(commentDto);
+
+		when(commentService.updateComment(anyLong(), anyLong(), any()))
+			.thenReturn(response);
 
 		// When
-		ResultActions perform = mockMvc.perform(
-			put("/comments/{commentId}", 1L).sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(commentUpdateDto)));
+		ResultActions perform = mockMvc.perform(put("/comments/{commentId}", 1L)
+			.sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(commentUpdateDto)));
 
 		// Then
-		perform.andDo(print()).andExpectAll(status().isOk(), jsonPath("$.content").value("test2"));
+		perform.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.content")
+					.value("test2")
+			);
 
 	}
 
@@ -120,14 +173,27 @@ class CommentControllerTest {
 	@DisplayName("댓글 삭제 성공")
 	void success_deleteComment() throws Exception {
 		// Given
-		when(commentService.deleteComment(anyLong(), anyLong())).thenReturn(commentDto);
+		when(response.getResult())
+			.thenReturn(commentDto);
+		when(response.getMessage())
+			.thenReturn("댓글 삭제 성공");
+
+		when(commentService.deleteComment(anyLong(), anyLong()))
+			.thenReturn(response);
 
 		// When
-		ResultActions perform = mockMvc.perform(
-			delete("/comments/{commentId}", 1L).sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto));
+		ResultActions perform = mockMvc.perform(delete("/comments/{commentId}", 1L)
+			.sessionAttr(SessionConstants.AUTHORIZATION, memberAuthDto));
 
 		// Then
-		perform.andDo(print()).andExpectAll(status().isOk(), jsonPath("$.commentId").value(commentDto.getCommentId()));
+		perform.andDo(print())
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.commentId")
+					.value(commentDto.getCommentId())
+			);
 
 	}
 

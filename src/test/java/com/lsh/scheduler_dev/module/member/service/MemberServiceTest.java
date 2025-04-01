@@ -17,7 +17,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.member.dto.request.MemberCreateDto;
@@ -73,14 +74,14 @@ class MemberServiceTest {
 			.willReturn(member);
 
 		// When
-		MemberDto memberDto = memberService.saveMember(memberCreateDto);
+		CommonResponse<MemberDto> response = memberService.saveMember(memberCreateDto);
 
 		// Then
 		verify(memberRepository, times(1)).save(any());
 		assertAll(
-			() -> assertEquals(1L, memberDto.getMemberId()),
-			() -> assertEquals("test", memberDto.getName()),
-			() -> assertEquals("test@test", memberDto.getEmail())
+			() -> assertEquals(1L, response.getResult().getMemberId()),
+			() -> assertEquals("test", response.getResult().getName()),
+			() -> assertEquals("test@test", response.getResult().getEmail())
 		);
 
 	}
@@ -153,11 +154,11 @@ class MemberServiceTest {
 			.willReturn(new PageImpl<>(list, pageable, list.size()));
 
 		// When
-		ListResponse<MemberDto> result = memberService.getAllMembers(any());
+		CommonResponses<MemberDto> responses = memberService.getAllMembers(any());
 
 		// Then
-		List<MemberDto> content = result.getContent();
-		for (MemberDto memberDto : content) {
+		List<MemberDto> result = responses.getResult();
+		for (MemberDto memberDto : result) {
 			assertAll(
 				() -> assertEquals(memberDto.getMemberId(), member.getId()),
 				() -> assertEquals(memberDto.getEmail(), member.getEmail()),
@@ -185,12 +186,12 @@ class MemberServiceTest {
 			.willReturn(Optional.of(member));
 
 		// When
-		MemberDto memberDto = memberService.updateMember(anyLong(), memberUpdateDto);
+		CommonResponse<MemberDto> response = memberService.updateMember(anyLong(), memberUpdateDto);
 
 		// Then
 		assertAll(
-			() -> assertEquals(1L, memberDto.getMemberId()),
-			() -> assertEquals("test2", memberDto.getName())
+			() -> assertEquals(1L, response.getResult().getMemberId()),
+			() -> assertEquals("test2", response.getResult().getName())
 		);
 
 	}
@@ -226,13 +227,13 @@ class MemberServiceTest {
 			.willReturn(Optional.of(member));
 
 		// When
-		MemberDto memberDto = memberService.deleteMember(anyLong());
+		CommonResponse<MemberDto> response = memberService.deleteMember(anyLong());
 
 		// Then
 		assertAll(
-			() -> assertEquals(memberDto.getMemberId(), member.getId()),
-			() -> assertEquals(memberDto.getName(), member.getName()),
-			() -> assertEquals(memberDto.getEmail(), member.getEmail())
+			() -> assertEquals(response.getResult().getMemberId(), member.getId()),
+			() -> assertEquals(response.getResult().getName(), member.getName()),
+			() -> assertEquals(response.getResult().getEmail(), member.getEmail())
 		);
 
 	}

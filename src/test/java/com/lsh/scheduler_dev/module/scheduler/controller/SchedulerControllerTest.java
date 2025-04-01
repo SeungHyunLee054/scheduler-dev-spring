@@ -20,7 +20,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsh.scheduler_dev.common.constants.SessionConstants;
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.scheduler.application.SchedulerService;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerUpdateDto;
@@ -36,6 +37,12 @@ class SchedulerControllerTest {
 
 	@Mock
 	private SchedulerDto schedulerDto;
+
+	@Mock
+	private CommonResponse<SchedulerDto> response;
+
+	@Mock
+	private CommonResponses<SchedulerDto> responses;
 
 	@Mock
 	private MemberAuthDto memberAuthDto;
@@ -63,8 +70,13 @@ class SchedulerControllerTest {
 		when(schedulerDto.getContent())
 			.thenReturn("test");
 
-		when(schedulerService.saveScheduler(any(), any()))
+		when(response.getMessage())
+			.thenReturn("일정 생성 성공");
+		when(response.getResult())
 			.thenReturn(schedulerDto);
+
+		when(schedulerService.saveScheduler(any(), any()))
+			.thenReturn(response);
 
 		// When
 		ResultActions perform = mockMvc.perform(post("/schedulers")
@@ -76,17 +88,19 @@ class SchedulerControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isCreated(),
-				jsonPath("$.schedulerId")
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.schedulerId")
 					.value(1L),
-				jsonPath("$.memberId")
+				jsonPath("$.result.memberId")
 					.value(1L),
-				jsonPath("$.name")
+				jsonPath("$.result.name")
 					.value("test"),
-				jsonPath("$.title")
+				jsonPath("$.result.title")
 					.value("test"),
-				jsonPath("$.content")
+				jsonPath("$.result.content")
 					.value("test"),
-				jsonPath("$.commentCount")
+				jsonPath("$.result.commentCount")
 					.value(0)
 			);
 
@@ -109,10 +123,13 @@ class SchedulerControllerTest {
 
 		List<SchedulerDto> list = List.of(schedulerDto, schedulerDto);
 
+		when(responses.getMessage())
+			.thenReturn("일정 전체 조회 성공");
+		when(responses.getResult())
+			.thenReturn(list);
+
 		when(schedulerService.getAllSchedulers(any()))
-			.thenReturn(ListResponse.<SchedulerDto>builder()
-				.content(list)
-				.build());
+			.thenReturn(responses);
 
 		// When
 		ResultActions perform = mockMvc.perform(get("/schedulers")
@@ -124,17 +141,19 @@ class SchedulerControllerTest {
 			perform.andDo(print())
 				.andExpectAll(
 					status().isOk(),
-					jsonPath("$.content.[" + i + "].schedulerId")
+					jsonPath("$.message")
+						.value(responses.getMessage()),
+					jsonPath("$.result.[" + i + "].schedulerId")
 						.value(1L),
-					jsonPath("$.content.[" + i + "].memberId")
+					jsonPath("$.result.[" + i + "].memberId")
 						.value(1L),
-					jsonPath("$.content.[" + i + "].name")
+					jsonPath("$.result.[" + i + "].name")
 						.value("test"),
-					jsonPath("$.content.[" + i + "].title")
+					jsonPath("$.result.[" + i + "].title")
 						.value("test"),
-					jsonPath("$.content.[" + i + "].content")
+					jsonPath("$.result.[" + i + "].content")
 						.value("test"),
-					jsonPath("$.content.[" + i + "].commentCount")
+					jsonPath("$.result.[" + i + "].commentCount")
 						.value(0)
 
 				);
@@ -156,8 +175,13 @@ class SchedulerControllerTest {
 		when(schedulerDto.getContent())
 			.thenReturn("test2");
 
-		when(schedulerService.updateScheduler(anyLong(), anyLong(), any()))
+		when(response.getMessage())
+			.thenReturn("일정 수정 성공");
+		when(response.getResult())
 			.thenReturn(schedulerDto);
+
+		when(schedulerService.updateScheduler(anyLong(), anyLong(), any()))
+			.thenReturn(response);
 
 		// When
 		ResultActions perform = mockMvc.perform(put("/schedulers/{schedulerId}", 1L)
@@ -169,9 +193,11 @@ class SchedulerControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
-				jsonPath("$.title")
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.title")
 					.value("test2"),
-				jsonPath("$.content")
+				jsonPath("$.result.content")
 					.value("test2")
 			);
 
@@ -181,8 +207,13 @@ class SchedulerControllerTest {
 	@DisplayName("일정 삭제 성공")
 	void success_deleteScheduler() throws Exception {
 		// Given
-		when(schedulerService.deleteScheduler(anyLong(), anyLong()))
+		when(responses.getMessage())
+			.thenReturn("일정 삭제 성공");
+		when(response.getResult())
 			.thenReturn(schedulerDto);
+
+		when(schedulerService.deleteScheduler(anyLong(), anyLong()))
+			.thenReturn(response);
 
 		// When
 		ResultActions perform = mockMvc.perform(delete("/schedulers/{schedulerId}", 1L)
@@ -192,9 +223,11 @@ class SchedulerControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
-				jsonPath("$.schedulerId")
+				jsonPath("$.message")
+					.value(response.getMessage()),
+				jsonPath("$.result.schedulerId")
 					.value(schedulerDto.getSchedulerId()),
-				jsonPath("$.memberId")
+				jsonPath("$.result.memberId")
 					.value(memberAuthDto.getMemberId())
 			);
 
