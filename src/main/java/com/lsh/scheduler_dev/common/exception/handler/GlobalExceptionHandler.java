@@ -1,9 +1,7 @@
 package com.lsh.scheduler_dev.common.exception.handler;
 
-import com.lsh.scheduler_dev.common.exception.BaseException;
-import com.lsh.scheduler_dev.common.exception.dto.ErrorResponse;
-import com.lsh.scheduler_dev.common.log.error.LogErrorUtils;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -11,34 +9,38 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.List;
+import com.lsh.scheduler_dev.common.exception.BaseException;
+import com.lsh.scheduler_dev.common.exception.dto.ErrorResponse;
+import com.lsh.scheduler_dev.common.log.error.LogErrorUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ErrorResponse> CustomExceptionHandler(BaseException e) {
-        log.error("예외 발생: {} (ErrorCode: {})", e.getMessage(), e.getErrorCode());
-        LogErrorUtils.logError(e);
+	@ExceptionHandler(BaseException.class)
+	public ResponseEntity<ErrorResponse> customExceptionHandler(BaseException baseException) {
+		log.error("예외 발생: {} (ErrorCode: {})", baseException.getMessage(), baseException.getErrorCode());
+		LogErrorUtils.logError(baseException);
 
-        return ResponseEntity.status(e.getHttpStatus())
-                .body(ErrorResponse.builder()
-                        .errorCode(e.getErrorCode().name())
-                        .errorMessage(e.getErrorMessage())
-                        .build());
-    }
+		return ResponseEntity.status(baseException.getHttpStatus())
+			.body(ErrorResponse.builder()
+				.errorCode(baseException.getErrorCode().name())
+				.errorMessage(baseException.getErrorMessage())
+				.build());
+	}
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<ErrorResponse>> inputValidationExceptionHandler(BindingResult result) {
-        log.error(result.getFieldErrors().toString());
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<List<ErrorResponse>> inputValidationExceptionHandler(BindingResult result) {
+		log.error(result.getFieldErrors().toString());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(result.getFieldErrors().stream()
-                        .map(e -> ErrorResponse.builder()
-                                .errorCode(e.getCode())
-                                .errorMessage(e.getDefaultMessage())
-                                .build())
-                        .toList());
-    }
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(result.getFieldErrors().stream()
+				.map(e -> ErrorResponse.builder()
+					.errorCode(e.getCode())
+					.errorMessage(e.getDefaultMessage())
+					.build())
+				.toList());
+	}
 
 }
