@@ -106,11 +106,6 @@ class SchedulerDomainServiceTest {
         given(schedulerUpdateDto.getContent())
                 .willReturn("test2");
 
-        given(member.getId())
-                .willReturn(1L);
-
-        given(scheduler.getMember())
-                .willReturn(member);
         given(scheduler.getTitle())
                 .willReturn("test2");
         given(scheduler.getContent())
@@ -133,8 +128,8 @@ class SchedulerDomainServiceTest {
     }
 
     @Test
-    @DisplayName("일정 수정 실패 - 유저 불일치")
-    void fail_updateScheduler_userMismatch() {
+    @DisplayName("일정 수정 실패 - 일정을 찾을 수 없음")
+    void fail_updateScheduler_schedulerNotFound() {
         // Given
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -142,6 +137,27 @@ class SchedulerDomainServiceTest {
         // When
         SchedulerException exception = assertThrows(SchedulerException.class,
                 () -> schedulerDomainService.updateScheduler(1L, 1L, schedulerUpdateDto));
+
+        // Then
+        assertEquals(SchedulerExceptionCode.SCHEDULER_NOT_FOUND, exception.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("일정 수정 실패 - 유저 불일치")
+    void fail_updateScheduler_userMismatch() {
+        // Given
+        given(schedulerRepository.findById(anyLong()))
+                .willReturn(Optional.of(Scheduler.builder()
+                        .id(1L)
+                        .member(Member.builder()
+                                .id(1L)
+                                .build())
+                        .build()));
+
+        // When
+        SchedulerException exception = assertThrows(SchedulerException.class,
+                () -> schedulerDomainService.updateScheduler(2L, 1L, schedulerUpdateDto));
 
         // Then
         assertEquals(SchedulerExceptionCode.USER_MISMATCH, exception.getErrorCode());
@@ -152,9 +168,6 @@ class SchedulerDomainServiceTest {
     @DisplayName("일정 삭제 성공")
     void success_deleteScheduler() {
         // Given
-        given(member.getId())
-                .willReturn(1L);
-
         given(scheduler.getId())
                 .willReturn(1L);
         given(scheduler.getMember())
@@ -178,8 +191,8 @@ class SchedulerDomainServiceTest {
     }
 
     @Test
-    @DisplayName("일정 삭제 실패 - 유저 불일치")
-    void fail_deleteScheduler_userMismatch() {
+    @DisplayName("일정 삭제 실패 - 일정을 찾을 수 없음")
+    void fail_deleteScheduler_schedulerNotFound() {
         // Given
         given(schedulerRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -187,6 +200,27 @@ class SchedulerDomainServiceTest {
         // When
         SchedulerException exception = assertThrows(SchedulerException.class,
                 () -> schedulerDomainService.deleteScheduler(1L, 1L));
+
+        // Then
+        assertEquals(SchedulerExceptionCode.SCHEDULER_NOT_FOUND, exception.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("일정 삭제 실패 - 유저 불일치")
+    void fail_deleteScheduler_userMismatch() {
+        // Given
+        given(schedulerRepository.findById(anyLong()))
+                .willReturn(Optional.of(Scheduler.builder()
+                        .id(1L)
+                        .member(Member.builder()
+                                .id(1L)
+                                .build())
+                        .build()));
+
+        // When
+        SchedulerException exception = assertThrows(SchedulerException.class,
+                () -> schedulerDomainService.deleteScheduler(2L, 1L));
 
         // Then
         assertEquals(SchedulerExceptionCode.USER_MISMATCH, exception.getErrorCode());

@@ -26,8 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CommentDomainServiceTest {
@@ -102,11 +101,6 @@ class CommentDomainServiceTest {
         given(commentUpdateDto.getContent())
                 .willReturn("test2");
 
-        given(member.getId())
-                .willReturn(1L);
-
-        given(comment.getMember())
-                .willReturn(member);
         given(comment.getContent())
                 .willReturn("test2");
 
@@ -124,8 +118,8 @@ class CommentDomainServiceTest {
     }
 
     @Test
-    @DisplayName("댓글 수정 실패 - 유저 불일치")
-    void fail_updateComment_userMismatch() {
+    @DisplayName("댓글 수정 실패 - 조회한 댓글이 없음")
+    void fail_updateComment_commentNotFound() {
         // Given
         given(commentRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -133,6 +127,28 @@ class CommentDomainServiceTest {
         // When
         CommentException exception = assertThrows(CommentException.class,
                 () -> commentDomainService.updateComment(1L, 1L, commentUpdateDto));
+
+        // Then
+        assertEquals(CommentExceptionCode.COMMENT_NOT_FOUND, exception.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 유저 불일치")
+    void fail_updateComment_userMismatch() {
+        // Given
+        given(commentRepository.findById(anyLong()))
+                .willReturn(Optional.of(Comment.builder()
+                        .id(1L)
+                        .member(Member.builder()
+                                .id(1L)
+                                .build())
+                        .build()));
+
+
+        // When
+        CommentException exception = assertThrows(CommentException.class,
+                () -> commentDomainService.updateComment(1L, 2L, commentUpdateDto));
 
         // Then
         assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());
@@ -143,12 +159,6 @@ class CommentDomainServiceTest {
     @DisplayName("댓글 삭제 성공")
     void success_deleteComment() {
         // Given
-        given(member.getId())
-                .willReturn(1L);
-
-        given(comment.getMember())
-                .willReturn(member);
-
         given(commentRepository.findById(anyLong()))
                 .willReturn(Optional.of(comment));
 
@@ -164,8 +174,8 @@ class CommentDomainServiceTest {
     }
 
     @Test
-    @DisplayName("댓글 삭제 실패 - 유저 불일치")
-    void fail_deleteComment_userMismatch() {
+    @DisplayName("댓글 삭제 실패 - 조회한 댓글이 없음")
+    void fail_deleteComment_commentNotFound() {
         // Given
         given(commentRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -173,6 +183,28 @@ class CommentDomainServiceTest {
         // When
         CommentException exception = assertThrows(CommentException.class,
                 () -> commentDomainService.deleteComment(1L, 1L));
+
+        // Then
+        assertEquals(CommentExceptionCode.COMMENT_NOT_FOUND, exception.getErrorCode());
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 유저 불일치")
+    void fail_deleteComment_userMismatch() {
+        // Given
+        given(commentRepository.findById(anyLong()))
+                .willReturn(Optional.of(Comment.builder()
+                        .id(1L)
+                        .member(Member.builder()
+                                .id(1L)
+                                .build())
+                        .build()));
+
+
+        // When
+        CommentException exception = assertThrows(CommentException.class,
+                () -> commentDomainService.deleteComment(1L, 2L));
 
         // Then
         assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());

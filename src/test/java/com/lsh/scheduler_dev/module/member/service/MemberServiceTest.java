@@ -1,7 +1,6 @@
 package com.lsh.scheduler_dev.module.member.service;
 
 import com.lsh.scheduler_dev.common.response.ListResponse;
-import com.lsh.scheduler_dev.common.utils.password.PasswordUtils;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.member.dto.request.MemberCreateDto;
@@ -28,7 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -114,8 +114,6 @@ class MemberServiceTest {
 
         given(member.getEmail())
                 .willReturn("test@test");
-        given(member.getPassword())
-                .willReturn(PasswordUtils.encryptPassword("testtest"));
 
         given(memberRepository.findByEmail(any()))
                 .willReturn(Optional.of(member));
