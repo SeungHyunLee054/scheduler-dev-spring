@@ -57,8 +57,9 @@ public class CommentDomainService {
     @Transactional
     public Comment updateComment(Long commentId, Long memberId, CommentUpdateDto commentUpdateDto) {
         Comment comment = commentRepository.findById(commentId)
-                .filter(c -> c.getMember().getId().equals(memberId))
-                .orElseThrow(() -> new CommentException(CommentExceptionCode.USER_MISMATCH));
+                .orElseThrow(() -> new CommentException(CommentExceptionCode.COMMENT_NOT_FOUND));
+
+        comment.validateMember(memberId);
 
         comment.updateContent(commentUpdateDto.getContent());
 
@@ -74,8 +75,9 @@ public class CommentDomainService {
      */
     public Comment deleteComment(Long commentId, Long memberId) {
         Comment comment = commentRepository.findById(commentId)
-                .filter(c -> c.getMember().getId().equals(memberId))
-                .orElseThrow(() -> new CommentException(CommentExceptionCode.USER_MISMATCH));
+                .orElseThrow(() -> new CommentException(CommentExceptionCode.COMMENT_NOT_FOUND));
+
+        comment.validateMember(memberId);
 
         commentRepository.delete(comment);
 

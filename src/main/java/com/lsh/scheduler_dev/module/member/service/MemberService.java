@@ -52,8 +52,9 @@ public class MemberService {
     @Transactional
     public MemberAuthDto signIn(MemberSignInDto memberSignInDto) {
         Member member = memberRepository.findByEmail(memberSignInDto.getEmail())
-                .filter(m -> PasswordUtils.matches(memberSignInDto.getPassword(), m.getPassword()))
-                .orElseThrow(() -> new MemberException(MemberExceptionCode.FAIL_SIGN_IN));
+                .orElseThrow(() -> new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
+
+        member.checkPassword(memberSignInDto.getPassword());
 
         return MemberAuthDto.builder()
                 .memberId(member.getId())

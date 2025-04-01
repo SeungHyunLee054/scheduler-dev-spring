@@ -3,6 +3,8 @@ package com.lsh.scheduler_dev.module.scheduler.domain.model;
 import com.lsh.scheduler_dev.common.jpa.audit.BaseEntity;
 import com.lsh.scheduler_dev.module.comment.domain.model.Comment;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
+import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
+import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +49,12 @@ public class Scheduler extends BaseEntity {
 
     public void minusCommentCount() {
         this.commentCount = Math.max(0, --this.commentCount);
+    }
+
+    public void validateMember(Long memberId) {
+        if (!this.member.getId().equals(memberId)) {
+            throw new SchedulerException(SchedulerExceptionCode.USER_MISMATCH);
+        }
     }
 
 }

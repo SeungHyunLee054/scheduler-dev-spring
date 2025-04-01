@@ -52,9 +52,9 @@ public class SchedulerDomainService {
      * @return 일정
      */
     public Scheduler updateScheduler(Long memberId, Long schedulerId, SchedulerUpdateDto schedulerUpdateDto) {
-        Scheduler scheduler = schedulerRepository.findById(schedulerId)
-                .filter(s -> s.getMember().getId().equals(memberId))
-                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.USER_MISMATCH));
+        Scheduler scheduler = findById(schedulerId);
+
+        scheduler.validateMember(memberId);
 
         scheduler.updateScheduler(schedulerUpdateDto.getTitle(), schedulerUpdateDto.getContent());
 
@@ -69,13 +69,13 @@ public class SchedulerDomainService {
      * @return 삭제된 일정
      */
     public Scheduler deleteScheduler(Long memberId, Long schedulerId) {
-        Scheduler deletedScheduler = schedulerRepository.findById(schedulerId)
-                .filter(s -> s.getMember().getId().equals(memberId))
-                .orElseThrow(() -> new SchedulerException(SchedulerExceptionCode.USER_MISMATCH));
+        Scheduler scheduler = findById(schedulerId);
 
-        schedulerRepository.delete(deletedScheduler);
+        scheduler.validateMember(memberId);
 
-        return deletedScheduler;
+        schedulerRepository.delete(scheduler);
+
+        return scheduler;
     }
 
     /**
