@@ -56,10 +56,7 @@ public class MemberService {
 
         member.checkPassword(memberSignInDto.getPassword());
 
-        return MemberAuthDto.builder()
-                .memberId(member.getId())
-                .email(member.getEmail())
-                .build();
+        return MemberAuthDto.from(member);
     }
 
     /**
