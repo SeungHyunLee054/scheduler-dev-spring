@@ -2,7 +2,7 @@ package com.lsh.scheduler_dev.module.scheduler.domain.model;
 
 import java.util.List;
 
-import com.lsh.scheduler_dev.common.jpa.audit.BaseEntity;
+import com.lsh.scheduler_dev.common.audit.BaseEntity;
 import com.lsh.scheduler_dev.module.comment.domain.model.Comment;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;

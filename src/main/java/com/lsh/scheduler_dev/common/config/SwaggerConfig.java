@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.common.swagger.config;
+package com.lsh.scheduler_dev.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

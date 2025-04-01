@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.common.log.info;
+package com.lsh.scheduler_dev.common.aop;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;

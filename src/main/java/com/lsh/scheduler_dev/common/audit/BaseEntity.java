@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.common.jpa.audit;
+package com.lsh.scheduler_dev.common.audit;
 
 import java.time.LocalDateTime;
 

@@ -1,6 +1,6 @@
 package com.lsh.scheduler_dev.module.comment.domain.model;
 
-import com.lsh.scheduler_dev.common.jpa.audit.BaseEntity;
+import com.lsh.scheduler_dev.common.audit.BaseEntity;
 import com.lsh.scheduler_dev.module.comment.exception.CommentException;
 import com.lsh.scheduler_dev.module.comment.exception.CommentExceptionCode;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;

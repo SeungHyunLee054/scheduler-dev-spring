@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.common.jpa.config;
+package com.lsh.scheduler_dev.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

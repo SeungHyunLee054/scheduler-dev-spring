@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.common.log.error;
+package com.lsh.scheduler_dev.common.utils.log;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;

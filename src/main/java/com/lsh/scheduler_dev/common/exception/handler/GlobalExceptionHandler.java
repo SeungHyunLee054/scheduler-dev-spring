@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.lsh.scheduler_dev.common.exception.BaseException;
 import com.lsh.scheduler_dev.common.exception.dto.ErrorResponse;
-import com.lsh.scheduler_dev.common.log.error.LogErrorUtils;
+import com.lsh.scheduler_dev.common.utils.log.LogErrorUtils;
 
 import lombok.extern.slf4j.Slf4j;
 

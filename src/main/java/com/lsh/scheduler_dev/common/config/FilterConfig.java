@@ -1,4 +1,4 @@
-package com.lsh.scheduler_dev.common.filter.config;
+package com.lsh.scheduler_dev.common.config;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

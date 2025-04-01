@@ -8,7 +8,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsh.scheduler_dev.common.exception.dto.ErrorResponse;
 import com.lsh.scheduler_dev.common.filter.exception.FilterException;
-import com.lsh.scheduler_dev.common.log.error.LogErrorUtils;
+import com.lsh.scheduler_dev.common.utils.log.LogErrorUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
