@@ -39,7 +39,10 @@ class SchedulerControllerTest {
 	private SchedulerDto schedulerDto;
 
 	@Mock
-	private CommonResponse<SchedulerDto> response;
+	private CommonResponse<SchedulerDto> responseDto;
+
+	@Mock
+	private CommonResponse<Long> responseLong;
 
 	@Mock
 	private CommonResponses<SchedulerDto> responses;
@@ -70,13 +73,13 @@ class SchedulerControllerTest {
 		when(schedulerDto.getContent())
 			.thenReturn("test");
 
-		when(response.getMessage())
+		when(responseDto.getMessage())
 			.thenReturn("일정 생성 성공");
-		when(response.getResult())
+		when(responseDto.getResult())
 			.thenReturn(schedulerDto);
 
 		when(schedulerService.saveScheduler(any(), any()))
-			.thenReturn(response);
+			.thenReturn(responseDto);
 
 		// When
 		ResultActions perform = mockMvc.perform(post("/schedulers")
@@ -89,7 +92,7 @@ class SchedulerControllerTest {
 			.andExpectAll(
 				status().isCreated(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
+					.value(responseDto.getMessage()),
 				jsonPath("$.result.schedulerId")
 					.value(1L),
 				jsonPath("$.result.memberId")
@@ -175,13 +178,13 @@ class SchedulerControllerTest {
 		when(schedulerDto.getContent())
 			.thenReturn("test2");
 
-		when(response.getMessage())
+		when(responseDto.getMessage())
 			.thenReturn("일정 수정 성공");
-		when(response.getResult())
+		when(responseDto.getResult())
 			.thenReturn(schedulerDto);
 
 		when(schedulerService.updateScheduler(anyLong(), anyLong(), any()))
-			.thenReturn(response);
+			.thenReturn(responseDto);
 
 		// When
 		ResultActions perform = mockMvc.perform(put("/schedulers/{schedulerId}", 1L)
@@ -194,7 +197,7 @@ class SchedulerControllerTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
+					.value(responseDto.getMessage()),
 				jsonPath("$.result.title")
 					.value("test2"),
 				jsonPath("$.result.content")
@@ -207,13 +210,13 @@ class SchedulerControllerTest {
 	@DisplayName("일정 삭제 성공")
 	void success_deleteScheduler() throws Exception {
 		// Given
-		when(responses.getMessage())
+		when(responseLong.getMessage())
 			.thenReturn("일정 삭제 성공");
-		when(response.getResult())
-			.thenReturn(schedulerDto);
+		when(responseLong.getResult())
+			.thenReturn(1L);
 
 		when(schedulerService.deleteScheduler(anyLong(), anyLong()))
-			.thenReturn(response);
+			.thenReturn(responseLong);
 
 		// When
 		ResultActions perform = mockMvc.perform(delete("/schedulers/{schedulerId}", 1L)
@@ -224,11 +227,9 @@ class SchedulerControllerTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
-				jsonPath("$.result.schedulerId")
-					.value(schedulerDto.getSchedulerId()),
-				jsonPath("$.result.memberId")
-					.value(memberAuthDto.getMemberId())
+					.value(responseLong.getMessage()),
+				jsonPath("$.result")
+					.value(responseLong.getResult())
 			);
 
 	}

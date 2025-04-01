@@ -218,22 +218,16 @@ class MemberServiceTest {
 		// Given
 		given(member.getId())
 			.willReturn(1L);
-		given(member.getName())
-			.willReturn("test");
-		given(member.getEmail())
-			.willReturn("test@test");
 
 		given(memberRepository.findById(anyLong()))
 			.willReturn(Optional.of(member));
 
 		// When
-		CommonResponse<MemberDto> response = memberService.deleteMember(anyLong());
+		CommonResponse<Long> response = memberService.deleteMember(anyLong());
 
 		// Then
 		assertAll(
-			() -> assertEquals(response.getResult().getMemberId(), member.getId()),
-			() -> assertEquals(response.getResult().getName(), member.getName()),
-			() -> assertEquals(response.getResult().getEmail(), member.getEmail())
+			() -> assertEquals(response.getResult(), member.getId())
 		);
 
 	}

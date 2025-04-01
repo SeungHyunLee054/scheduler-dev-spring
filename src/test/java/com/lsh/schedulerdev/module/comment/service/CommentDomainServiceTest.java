@@ -166,16 +166,18 @@ class CommentDomainServiceTest {
 	@DisplayName("댓글 삭제 성공")
 	void success_deleteComment() {
 		// Given
+		given(comment.getId())
+			.willReturn(1L);
+
 		given(commentRepository.findById(anyLong()))
 			.willReturn(Optional.of(comment));
 
 		// When
-		Comment deletedComment = commentDomainService.deleteComment(1L, 1L);
+		Long deletedCommentId = commentDomainService.deleteComment(1L, 1L);
 
 		// Then
 		assertAll(
-			() -> assertEquals(comment.getId(), deletedComment.getId()),
-			() -> assertEquals(comment.getContent(), deletedComment.getContent())
+			() -> assertEquals(comment.getId(), deletedCommentId)
 		);
 
 	}

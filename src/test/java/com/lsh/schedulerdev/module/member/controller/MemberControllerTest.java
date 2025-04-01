@@ -42,7 +42,10 @@ class MemberControllerTest {
 	private SessionExpiredConstant sessionExpiredConstant;
 
 	@Mock
-	private CommonResponse<MemberDto> response;
+	private CommonResponse<MemberDto> responseDto;
+
+	@Mock
+	private CommonResponse<Long> responseLong;
 
 	@Mock
 	private CommonResponses<MemberDto> responses;
@@ -79,9 +82,9 @@ class MemberControllerTest {
 		when(memberCreateDto.getPassword())
 			.thenReturn("testtest");
 
-		when(response.getMessage())
+		when(responseDto.getMessage())
 			.thenReturn("회원가입 성공");
-		when(response.getResult())
+		when(responseDto.getResult())
 			.thenReturn(memberDto);
 
 		when(memberDto.getMemberId())
@@ -92,7 +95,7 @@ class MemberControllerTest {
 			.thenReturn("test@test");
 
 		when(memberService.saveMember(any()))
-			.thenReturn(response);
+			.thenReturn(responseDto);
 
 		// When
 		ResultActions perform = mockMvc.perform(post("/members/signup")
@@ -104,7 +107,7 @@ class MemberControllerTest {
 			.andExpectAll(
 				status().isCreated(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
+					.value(responseDto.getMessage()),
 				jsonPath("$.result.memberId")
 					.value(1L),
 				jsonPath("$.result.name")
@@ -131,7 +134,7 @@ class MemberControllerTest {
 		when(memberAuthDto.getEmail())
 			.thenReturn("test@test");
 
-		when(response.getMessage())
+		when(responseDto.getMessage())
 			.thenReturn("로그인 성공");
 
 		when(memberService.signIn(any()))
@@ -148,7 +151,7 @@ class MemberControllerTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
+					.value(responseDto.getMessage()),
 				jsonPath("$.result")
 					.value(session.getId())
 			);
@@ -217,13 +220,13 @@ class MemberControllerTest {
 		when(memberDto.getName())
 			.thenReturn("t2");
 
-		when(response.getMessage())
+		when(responseDto.getMessage())
 			.thenReturn("유저 수정 성공");
-		when(response.getResult())
+		when(responseDto.getResult())
 			.thenReturn(memberDto);
 
 		when(memberService.updateMember(anyLong(), any()))
-			.thenReturn(response);
+			.thenReturn(responseDto);
 
 		// When
 		ResultActions perform = mockMvc.perform(put("/members")
@@ -236,7 +239,7 @@ class MemberControllerTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
+					.value(responseDto.getMessage()),
 				jsonPath("$.result.memberId")
 					.value(1L),
 				jsonPath("$.result.name")
@@ -259,13 +262,13 @@ class MemberControllerTest {
 		when(memberDto.getName())
 			.thenReturn("test");
 
-		when(response.getMessage())
+		when(responseLong.getMessage())
 			.thenReturn("유저 삭제 성공");
-		when(response.getResult())
-			.thenReturn(memberDto);
+		when(responseLong.getResult())
+			.thenReturn(1L);
 
 		when(memberService.deleteMember(anyLong()))
-			.thenReturn(response);
+			.thenReturn(responseLong);
 
 		// When
 		ResultActions perform = mockMvc.perform(delete("/members")
@@ -277,11 +280,9 @@ class MemberControllerTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
-				jsonPath("$.result.memberId")
-					.value(1L),
-				jsonPath("$.result.name")
-					.value("test")
+					.value(responseLong.getMessage()),
+				jsonPath("$.result")
+					.value(1L)
 			);
 
 	}

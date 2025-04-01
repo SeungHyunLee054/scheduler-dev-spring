@@ -40,7 +40,10 @@ class CommentControllerTest {
 	private CommentDto commentDto;
 
 	@Mock
-	private CommonResponse<CommentDto> response;
+	private CommonResponse<CommentDto> responseDto;
+
+	@Mock
+	private CommonResponse<Long> responseLong;
 
 	@Mock
 	private CommonResponses<CommentDto> responses;
@@ -66,13 +69,13 @@ class CommentControllerTest {
 		when(commentDto.getContent())
 			.thenReturn("test");
 
-		when(response.getMessage())
+		when(responseDto.getMessage())
 			.thenReturn("댓글 생성 성공");
-		when(response.getResult())
+		when(responseDto.getResult())
 			.thenReturn(commentDto);
 
 		when(commentService.saveComment(anyLong(), anyLong(), any()))
-			.thenReturn(response);
+			.thenReturn(responseDto);
 
 		// When
 		ResultActions perform = mockMvc.perform(post("/comments")
@@ -86,7 +89,7 @@ class CommentControllerTest {
 			.andExpectAll(
 				status().isCreated(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
+					.value(responseDto.getMessage()),
 				jsonPath("$.result.commentId")
 					.value(1L),
 				jsonPath("$.result.content")
@@ -137,19 +140,19 @@ class CommentControllerTest {
 	}
 
 	@Test
-	@DisplayName("일정 수정 성공")
+	@DisplayName("해당 일정의 해당 댓글 수정 성공")
 	void success_updateComment() throws Exception {
 		// Given
 		when(commentDto.getContent())
 			.thenReturn("test2");
 
-		when(response.getMessage())
+		when(responseDto.getMessage())
 			.thenReturn("일정 수정 성공");
-		when(response.getResult())
+		when(responseDto.getResult())
 			.thenReturn(commentDto);
 
 		when(commentService.updateComment(anyLong(), anyLong(), any()))
-			.thenReturn(response);
+			.thenReturn(responseDto);
 
 		// When
 		ResultActions perform = mockMvc.perform(put("/comments/{commentId}", 1L)
@@ -162,7 +165,7 @@ class CommentControllerTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
+					.value(responseDto.getMessage()),
 				jsonPath("$.result.content")
 					.value("test2")
 			);
@@ -173,13 +176,16 @@ class CommentControllerTest {
 	@DisplayName("댓글 삭제 성공")
 	void success_deleteComment() throws Exception {
 		// Given
-		when(response.getResult())
-			.thenReturn(commentDto);
-		when(response.getMessage())
+		when(commentDto.getCommentId())
+			.thenReturn(1L);
+
+		when(responseLong.getResult())
+			.thenReturn(1L);
+		when(responseLong.getMessage())
 			.thenReturn("댓글 삭제 성공");
 
 		when(commentService.deleteComment(anyLong(), anyLong()))
-			.thenReturn(response);
+			.thenReturn(responseLong);
 
 		// When
 		ResultActions perform = mockMvc.perform(delete("/comments/{commentId}", 1L)
@@ -190,8 +196,8 @@ class CommentControllerTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.message")
-					.value(response.getMessage()),
-				jsonPath("$.result.commentId")
+					.value(responseLong.getMessage()),
+				jsonPath("$.result")
 					.value(commentDto.getCommentId())
 			);
 

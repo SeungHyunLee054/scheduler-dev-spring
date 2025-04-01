@@ -176,22 +176,17 @@ class SchedulerDomainServiceTest {
 		// Given
 		given(scheduler.getId())
 			.willReturn(1L);
-		given(scheduler.getMember())
-			.willReturn(member);
 
 		given(schedulerRepository.findById(anyLong()))
 			.willReturn(Optional.of(scheduler));
 
 		// When
 
-		Scheduler deletedScheduler = schedulerDomainService.deleteScheduler(1L, 1L);
+		Long deletedSchedulerId = schedulerDomainService.deleteScheduler(1L, 1L);
 
 		// Then
 		assertAll(
-			() -> assertEquals(scheduler.getId(), deletedScheduler.getId()),
-			() -> assertEquals(scheduler.getMember().getName(), deletedScheduler.getMember().getName()),
-			() -> assertEquals(scheduler.getTitle(), deletedScheduler.getTitle()),
-			() -> assertEquals(scheduler.getContent(), deletedScheduler.getContent())
+			() -> assertEquals(scheduler.getId(), deletedSchedulerId)
 		);
 
 	}

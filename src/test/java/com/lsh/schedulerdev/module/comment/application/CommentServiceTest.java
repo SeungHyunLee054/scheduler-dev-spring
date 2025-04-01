@@ -99,16 +99,6 @@ class CommentServiceTest {
 	@DisplayName("댓글 삭제 성공")
 	void success_deleteComment() {
 		// Given
-		given(comment.getMember())
-			.willReturn(member);
-		given(comment.getScheduler())
-			.willReturn(scheduler);
-
-		given(member.getId())
-			.willReturn(1L);
-
-		given(commentDomainService.deleteComment(anyLong(), anyLong()))
-			.willReturn(comment);
 
 		// When
 		commentService.deleteComment(1L, 1L);
@@ -124,11 +114,6 @@ class CommentServiceTest {
 	@DisplayName("댓글 삭제 실패 - 일정을 찾을 수 없음")
 	void fail_deleteComment_schedulerNotFound() {
 		// Given
-		given(comment.getScheduler())
-			.willReturn(scheduler);
-
-		given(commentDomainService.deleteComment(anyLong(), anyLong()))
-			.willReturn(comment);
 		given(schedulerDomainService.findById(anyLong()))
 			.willThrow(new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
 
