@@ -53,7 +53,7 @@ public class MemberService {
     public MemberAuthDto signIn(MemberSignInDto memberSignInDto) {
         Member member = memberRepository.findByEmail(memberSignInDto.getEmail())
                 .filter(m -> PasswordUtils.matches(memberSignInDto.getPassword(), m.getPassword()))
-                .orElseThrow(() -> new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberExceptionCode.FAIL_SIGN_IN));
 
         return MemberAuthDto.builder()
                 .memberId(member.getId())
