@@ -17,7 +17,7 @@ public class CommonResponses<T> {
 	private boolean hasPreviousPage;
 	private String message;
 	@Builder.Default
-	private List<T> content = new ArrayList<>();
+	private List<T> result = new ArrayList<>();
 
 	public static <T> CommonResponses<T> from(String message, Page<T> page) {
 		return CommonResponses.<T>builder()
@@ -26,14 +26,7 @@ public class CommonResponses<T> {
 			.hasNextPage(page.hasNext())
 			.hasPreviousPage(page.hasPrevious())
 			.message(message)
-			.content(page.getContent())
-			.build();
-	}
-
-	public static <T> CommonResponses<T> from(String message, List<T> list) {
-		return CommonResponses.<T>builder()
-			.message(message)
-			.content(list)
+			.result(page.getContent())
 			.build();
 	}
 }
