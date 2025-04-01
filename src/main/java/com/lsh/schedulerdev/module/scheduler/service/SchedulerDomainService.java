@@ -70,14 +70,14 @@ public class SchedulerDomainService {
 	 * @param schedulerId 일정 id
 	 * @return 삭제된 일정
 	 */
-	public Scheduler deleteScheduler(Long memberId, Long schedulerId) {
+	public Long deleteScheduler(Long memberId, Long schedulerId) {
 		Scheduler scheduler = findById(schedulerId);
 
 		scheduler.validateMember(memberId);
 
 		schedulerRepository.delete(scheduler);
 
-		return scheduler;
+		return schedulerId;
 	}
 
 	/**

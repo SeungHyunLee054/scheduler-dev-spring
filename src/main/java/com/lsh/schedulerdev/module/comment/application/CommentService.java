@@ -87,16 +87,14 @@ public class CommentService {
 	 * @return 삭제된 댓글 정보
 	 */
 	@Transactional
-	public CommonResponse<CommentDto> deleteComment(Long commentId, Long memberId) {
-		Comment comment = commentDomainService.deleteComment(commentId, memberId);
+	public CommonResponse<Long> deleteComment(Long commentId, Long memberId) {
+		Long deletedCommentId = commentDomainService.deleteComment(commentId, memberId);
 
-		Scheduler scheduler = schedulerDomainService.findById(comment.getScheduler().getId());
+		Scheduler scheduler = schedulerDomainService.findById(deletedCommentId);
 
 		schedulerDomainService.minusCommentCount(scheduler);
 
-		CommentDto commentDto = CommentDto.from(comment);
-
-		return CommonResponse.of("해당 일정의 해당 댓글 삭제 성공", commentDto);
+		return CommonResponse.of("해당 일정의 해당 댓글 삭제 성공", deletedCommentId);
 	}
 
 }

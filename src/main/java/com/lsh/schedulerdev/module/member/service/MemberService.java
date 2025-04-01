@@ -102,14 +102,12 @@ public class MemberService {
 	 * @return 삭제된 유저 정보
 	 */
 	@Transactional
-	public CommonResponse<MemberDto> deleteMember(Long memberId) {
+	public CommonResponse<Long> deleteMember(Long memberId) {
 		Member member = findById(memberId);
 
 		memberRepository.delete(member);
 
-		MemberDto memberDto = MemberDto.from(member);
-
-		return CommonResponse.of("유저 삭제 성공", memberDto);
+		return CommonResponse.of("유저 삭제 성공", member.getId());
 	}
 
 	/**

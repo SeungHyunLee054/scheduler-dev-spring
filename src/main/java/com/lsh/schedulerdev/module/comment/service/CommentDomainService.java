@@ -75,7 +75,7 @@ public class CommentDomainService {
 	 * @param memberId  유저 id
 	 * @return 삭제된 댓글 정보
 	 */
-	public Comment deleteComment(Long commentId, Long memberId) {
+	public Long deleteComment(Long commentId, Long memberId) {
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new CommentException(CommentExceptionCode.COMMENT_NOT_FOUND));
 
@@ -83,7 +83,7 @@ public class CommentDomainService {
 
 		commentRepository.delete(comment);
 
-		return comment;
+		return commentId;
 	}
 
 }

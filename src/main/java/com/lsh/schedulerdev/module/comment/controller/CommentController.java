@@ -63,7 +63,7 @@ public class CommentController {
 	}
 
 	@DeleteMapping("/{commentId}")
-	public ResponseEntity<CommonResponse<CommentDto>> deleteComment(
+	public ResponseEntity<CommonResponse<Long>> deleteComment(
 		@PathVariable Long commentId,
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto
 	) {

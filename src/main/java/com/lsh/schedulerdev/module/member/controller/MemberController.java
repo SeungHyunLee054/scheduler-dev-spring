@@ -72,7 +72,7 @@ public class MemberController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<CommonResponse<MemberDto>> deleteMember(
+	public ResponseEntity<CommonResponse<Long>> deleteMember(
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		HttpServletRequest request
 	) {

@@ -81,12 +81,10 @@ public class SchedulerService {
 	 * @return 삭제된 일정 정보
 	 */
 	@Transactional
-	public CommonResponse<SchedulerDto> deleteScheduler(Long memberId, Long schedulerId) {
-		Scheduler deletedScheduler = schedulerDomainService.deleteScheduler(memberId, schedulerId);
+	public CommonResponse<Long> deleteScheduler(Long memberId, Long schedulerId) {
+		Long deletedSchedulerId = schedulerDomainService.deleteScheduler(memberId, schedulerId);
 
-		SchedulerDto schedulerDto = SchedulerDto.from(deletedScheduler);
-
-		return CommonResponse.of("일정 삭제 성공", schedulerDto);
+		return CommonResponse.of("일정 삭제 성공", deletedSchedulerId);
 	}
 
 }

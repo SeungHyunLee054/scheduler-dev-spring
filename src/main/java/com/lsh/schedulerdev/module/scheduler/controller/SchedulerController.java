@@ -60,7 +60,7 @@ public class SchedulerController {
 	}
 
 	@DeleteMapping("{schedulerId}")
-	public ResponseEntity<CommonResponse<SchedulerDto>> deleteScheduler(
+	public ResponseEntity<CommonResponse<Long>> deleteScheduler(
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		@PathVariable Long schedulerId
 	) {
