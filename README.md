@@ -94,57 +94,77 @@
 ## 프로젝트 폴더 구조
 
 ```` text
-├───common
-│   ├───constants
-│   ├───exception
-│   │   ├───dto
-│   │   └───handler
-│   ├───filter
-│   │   ├───config
-│   │   └───exception
-│   ├───jpa
-│   │   ├───audit
-│   │   └───config
-│   ├───log
-│   │   ├───error
-│   │   └───info
-│   ├───response
-│   ├───swagger
-│   │   └───config
-│   └───utils
-│       └───password
-│           └───exception
-└───module
-    ├───comment
-    │   ├───application
-    │   ├───controller
-    │   ├───domain
-    │   │   └───model
-    │   ├───dto
-    │   │   ├───request
-    │   │   └───response
-    │   ├───exception
-    │   ├───repository
-    │   └───service
-    ├───member
-    │   ├───controller
-    │   ├───domain
-    │   │   └───model
-    │   ├───dto
-    │   │   ├───request
-    │   │   └───response
-    │   ├───exception
-    │   ├───repository
-    │   └───service
-    └───scheduler
-        ├───application
-        ├───controller
-        ├───domain
-        │   └───model
-        ├───dto
-        │   ├───request
-        │   └───response
-        ├───exception
-        ├───repository
-        └───service
+├───main
+│   ├───java
+│   │   └───com
+│   │       └───lsh
+│   │           └───scheduler_dev
+│   │               ├───common
+│   │               │   ├───aop
+│   │               │   ├───audit
+│   │               │   ├───config
+│   │               │   ├───constants
+│   │               │   ├───exception
+│   │               │   │   ├───dto
+│   │               │   │   └───handler
+│   │               │   ├───filter
+│   │               │   │   └───exception
+│   │               │   ├───response
+│   │               │   └───utils
+│   │               │       ├───log
+│   │               │       └───password
+│   │               │           └───exception
+│   │               └───module
+│   │                   ├───comment
+│   │                   │   ├───application
+│   │                   │   ├───controller
+│   │                   │   ├───domain
+│   │                   │   │   └───model
+│   │                   │   ├───dto
+│   │                   │   │   ├───request
+│   │                   │   │   └───response
+│   │                   │   ├───exception
+│   │                   │   ├───repository
+│   │                   │   └───service
+│   │                   ├───member
+│   │                   │   ├───controller
+│   │                   │   ├───domain
+│   │                   │   │   └───model
+│   │                   │   ├───dto
+│   │                   │   │   ├───request
+│   │                   │   │   └───response
+│   │                   │   ├───exception
+│   │                   │   ├───repository
+│   │                   │   └───service
+│   │                   └───scheduler
+│   │                       ├───application
+│   │                       ├───controller
+│   │                       ├───domain
+│   │                       │   └───model
+│   │                       ├───dto
+│   │                       │   ├───request
+│   │                       │   └───response
+│   │                       ├───exception
+│   │                       ├───repository
+│   │                       └───service
+│   └───resources
+│       ├───static
+│       └───templates
+└───test
+    └───java
+        └───com
+            └───lsh
+                └───scheduler_dev
+                    └───module
+                        ├───comment
+                        │   ├───application
+                        │   ├───controller
+                        │   └───service
+                        ├───member
+                        │   ├───controller
+                        │   └───service
+                        └───scheduler
+                            ├───application
+                            ├───controller
+                            └───service
 ````
