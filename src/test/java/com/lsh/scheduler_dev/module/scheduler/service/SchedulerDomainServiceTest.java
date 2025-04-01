@@ -192,4 +192,32 @@ class SchedulerDomainServiceTest {
         assertEquals(SchedulerExceptionCode.USER_MISMATCH, exception.getErrorCode());
 
     }
+
+    @Test
+    @DisplayName("댓글 수 증가 성공")
+    void success_plusCommentCount() {
+        // Given
+        Scheduler s = Scheduler.builder().commentCount(0).build();
+
+        // When
+        schedulerDomainService.plusCommentCount(s);
+
+        // Then
+        assertEquals(1, s.getCommentCount());
+
+    }
+
+    @Test
+    @DisplayName("댓글 수 감소 성공")
+    void success_minusCommentCount() {
+        // Given
+        Scheduler s = Scheduler.builder().commentCount(1).build();
+
+        // When
+        schedulerDomainService.minusCommentCount(s);
+
+        // Then
+        assertEquals(0, s.getCommentCount());
+
+    }
 }
