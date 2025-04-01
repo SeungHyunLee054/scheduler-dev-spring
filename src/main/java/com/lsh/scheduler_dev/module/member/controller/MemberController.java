@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,8 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity<MemberDto> signUp(@Valid @RequestBody MemberCreateDto memberCreateDto) {
-        return ResponseEntity.ok(memberService.saveMember(memberCreateDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(memberService.saveMember(memberCreateDto));
     }
 
     @PostMapping("/signin")

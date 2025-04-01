@@ -92,7 +92,7 @@ class MemberControllerTest {
         // Then
         perform.andDo(print())
                 .andExpectAll(
-                        status().isOk(),
+                        status().isCreated(),
                         jsonPath("$.memberId")
                                 .value(1L),
                         jsonPath("$.name")

@@ -77,7 +77,7 @@ class SchedulerControllerTest {
         // Then
         perform.andDo(print())
                 .andExpectAll(
-                        status().isOk(),
+                        status().isCreated(),
                         jsonPath("$.schedulerId")
                                 .value(1L),
                         jsonPath("$.memberId")

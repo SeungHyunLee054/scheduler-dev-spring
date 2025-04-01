@@ -10,6 +10,7 @@ import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,8 @@ public class CommentController {
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             @Valid @RequestBody CommentCreateDto commentCreateDto
     ) {
-        return ResponseEntity.ok(commentService
-                .saveComment(schedulerId, memberAuthDto.getMemberId(), commentCreateDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(commentService.saveComment(schedulerId, memberAuthDto.getMemberId(), commentCreateDto));
     }
 
     @GetMapping

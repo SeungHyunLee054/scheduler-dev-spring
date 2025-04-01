@@ -10,6 +10,7 @@ import com.lsh.scheduler_dev.module.scheduler.dto.response.SchedulerDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,8 @@ public class SchedulerController {
             @SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
             @Valid @RequestBody SchedulerCreateDto schedulerCreateDto
     ) {
-        return ResponseEntity.ok(schedulerService.saveScheduler(memberAuthDto.getMemberId(), schedulerCreateDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(schedulerService.saveScheduler(memberAuthDto.getMemberId(), schedulerCreateDto));
     }
 
     @GetMapping

@@ -73,7 +73,7 @@ class CommentControllerTest {
         // Then
         perform.andDo(print())
                 .andExpectAll(
-                        status().isOk(),
+                        status().isCreated(),
                         jsonPath("$.commentId")
                                 .value(1L),
                         jsonPath("$.content")
