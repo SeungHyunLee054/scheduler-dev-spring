@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.lsh.scheduler_dev.common.constants.SessionConstants;
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.comment.application.CommentService;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
@@ -32,7 +33,7 @@ public class CommentController {
 	private final CommentService commentService;
 
 	@PostMapping
-	public ResponseEntity<CommentDto> createComment(
+	public ResponseEntity<CommonResponse<CommentDto>> createComment(
 		@RequestParam Long schedulerId,
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody CommentCreateDto commentCreateDto
@@ -42,7 +43,7 @@ public class CommentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ListResponse<CommentDto>> getComments(
+	public ResponseEntity<CommonResponses<CommentDto>> getComments(
 		@RequestParam Long schedulerId,
 		@RequestParam(defaultValue = "0") Integer pageIdx,
 		@RequestParam(defaultValue = "10") Integer pageSize
@@ -52,7 +53,7 @@ public class CommentController {
 	}
 
 	@PutMapping("/{commentId}")
-	public ResponseEntity<CommentDto> updateComment(
+	public ResponseEntity<CommonResponse<CommentDto>> updateComment(
 		@PathVariable Long commentId,
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody CommentUpdateDto commentUpdateDto
@@ -62,7 +63,7 @@ public class CommentController {
 	}
 
 	@DeleteMapping("/{commentId}")
-	public ResponseEntity<CommentDto> deleteComment(
+	public ResponseEntity<CommonResponse<CommentDto>> deleteComment(
 		@PathVariable Long commentId,
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto
 	) {

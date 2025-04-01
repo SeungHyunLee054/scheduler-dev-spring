@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.lsh.scheduler_dev.common.constants.SessionConstants;
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.scheduler.application.SchedulerService;
 import com.lsh.scheduler_dev.module.scheduler.dto.request.SchedulerCreateDto;
@@ -32,7 +33,7 @@ public class SchedulerController {
 	private final SchedulerService schedulerService;
 
 	@PostMapping
-	public ResponseEntity<SchedulerDto> createScheduler(
+	public ResponseEntity<CommonResponse<SchedulerDto>> createScheduler(
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody SchedulerCreateDto schedulerCreateDto
 	) {
@@ -41,7 +42,7 @@ public class SchedulerController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ListResponse<SchedulerDto>> getAllSchedulers(
+	public ResponseEntity<CommonResponses<SchedulerDto>> getAllSchedulers(
 		@RequestParam(defaultValue = "0") Integer pageIdx,
 		@RequestParam(defaultValue = "10") Integer pageSize
 	) {
@@ -49,7 +50,7 @@ public class SchedulerController {
 	}
 
 	@PutMapping("/{schedulerId}")
-	public ResponseEntity<SchedulerDto> updateScheduler(
+	public ResponseEntity<CommonResponse<SchedulerDto>> updateScheduler(
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
 		@PathVariable Long schedulerId,
 		@Valid @RequestBody SchedulerUpdateDto schedulerUpdateDto
@@ -59,7 +60,7 @@ public class SchedulerController {
 	}
 
 	@DeleteMapping("{schedulerId}")
-	public ResponseEntity<SchedulerDto> deleteScheduler(
+	public ResponseEntity<CommonResponse<SchedulerDto>> deleteScheduler(
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
 		@PathVariable Long schedulerId
 	) {

@@ -1,9 +1,11 @@
 package com.lsh.scheduler_dev.module.member.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.common.utils.password.PasswordUtils;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
@@ -30,7 +32,7 @@ public class MemberService {
 	 * @return 유저 정보
 	 */
 	@Transactional
-	public MemberDto saveMember(MemberCreateDto memberCreateDto) {
+	public CommonResponse<MemberDto> saveMember(MemberCreateDto memberCreateDto) {
 		if (memberRepository.existsByEmail(memberCreateDto.getEmail())) {
 			throw new MemberException(MemberExceptionCode.ALREADY_EXIST_MEMBER);
 		}
@@ -41,7 +43,9 @@ public class MemberService {
 			.password(PasswordUtils.encryptPassword(memberCreateDto.getPassword()))
 			.build());
 
-		return MemberDto.from(savedMember);
+		MemberDto memberDto = MemberDto.from(savedMember);
+
+		return CommonResponse.of("회원 가입 성공", memberDto);
 	}
 
 	/**
@@ -66,9 +70,11 @@ public class MemberService {
 	 * @param pageable 페이지 값
 	 * @return Page에서 원하는 정보 값만 담은 List를 반환
 	 */
-	public ListResponse<MemberDto> getAllMembers(Pageable pageable) {
-		return ListResponse.from(memberRepository.findAllByOrderByModifiedAtDesc(pageable)
-			.map(MemberDto::from));
+	public CommonResponses<MemberDto> getAllMembers(Pageable pageable) {
+		Page<MemberDto> memberDtoPage = memberRepository.findAllByOrderByModifiedAtDesc(pageable)
+			.map(MemberDto::from);
+
+		return CommonResponses.from("모든 일정 조회 성공", memberDtoPage);
 	}
 
 	/**
@@ -79,12 +85,14 @@ public class MemberService {
 	 * @return 유저 정보
 	 */
 	@Transactional
-	public MemberDto updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
+	public CommonResponse<MemberDto> updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
 		Member member = findById(memberId);
 
 		member.updateMember(memberUpdateDto.getName(), PasswordUtils.encryptPassword(memberUpdateDto.getPassword()));
 
-		return MemberDto.from(member);
+		MemberDto memberDto = MemberDto.from(member);
+
+		return CommonResponse.of("유저 수정 성공", memberDto);
 	}
 
 	/**
@@ -94,12 +102,14 @@ public class MemberService {
 	 * @return 삭제된 유저 정보
 	 */
 	@Transactional
-	public MemberDto deleteMember(Long memberId) {
+	public CommonResponse<MemberDto> deleteMember(Long memberId) {
 		Member member = findById(memberId);
 
 		memberRepository.delete(member);
 
-		return MemberDto.from(member);
+		MemberDto memberDto = MemberDto.from(member);
+
+		return CommonResponse.of("유저 삭제 성공", memberDto);
 	}
 
 	/**

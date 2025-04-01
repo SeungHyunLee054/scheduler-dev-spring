@@ -4,7 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.comment.domain.model.Comment;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.scheduler_dev.module.comment.dto.request.CommentUpdateDto;
@@ -34,7 +35,7 @@ public class CommentService {
 	 * @return 댓글 정보
 	 */
 	@Transactional
-	public CommentDto saveComment(Long schedulerId, Long memberId, CommentCreateDto commentCreateDto) {
+	public CommonResponse<CommentDto> saveComment(Long schedulerId, Long memberId, CommentCreateDto commentCreateDto) {
 		Member member = memberService.findById(memberId);
 		Scheduler scheduler = schedulerDomainService.findById(schedulerId);
 
@@ -42,7 +43,9 @@ public class CommentService {
 
 		schedulerDomainService.plusCommentCount(scheduler);
 
-		return CommentDto.from(comment);
+		CommentDto commentDto = CommentDto.from(comment);
+
+		return CommonResponse.of("해당 일정에 댓글 생성 성공", commentDto);
 	}
 
 	/**
@@ -52,11 +55,11 @@ public class CommentService {
 	 * @param pageable    페이지 값
 	 * @return Page에서 원하는 정보 값만 담은 List를 반환
 	 */
-	public ListResponse<CommentDto> getAllCommentsByScheduler(Long schedulerId, Pageable pageable) {
+	public CommonResponses<CommentDto> getAllCommentsByScheduler(Long schedulerId, Pageable pageable) {
 		Page<Comment> commentPage = commentDomainService.getAllCommentsByScheduler(schedulerId, pageable);
 		Page<CommentDto> commentDtoPage = commentPage.map(CommentDto::from);
 
-		return ListResponse.from(commentDtoPage);
+		return CommonResponses.from("해당 일정의 모든 댓글 조회 성공", commentDtoPage);
 	}
 
 	/**
@@ -68,10 +71,12 @@ public class CommentService {
 	 * @return 댓글 정보
 	 */
 	@Transactional
-	public CommentDto updateComment(Long commentId, Long memberId, CommentUpdateDto commentUpdateDto) {
+	public CommonResponse<CommentDto> updateComment(Long commentId, Long memberId, CommentUpdateDto commentUpdateDto) {
 		Comment updateComment = commentDomainService.updateComment(commentId, memberId, commentUpdateDto);
 
-		return CommentDto.from(updateComment);
+		CommentDto commentDto = CommentDto.from(updateComment);
+
+		return CommonResponse.of("해당 일정의 해당 댓글 수정 성공", commentDto);
 	}
 
 	/**
@@ -82,14 +87,16 @@ public class CommentService {
 	 * @return 삭제된 댓글 정보
 	 */
 	@Transactional
-	public CommentDto deleteComment(Long commentId, Long memberId) {
+	public CommonResponse<CommentDto> deleteComment(Long commentId, Long memberId) {
 		Comment comment = commentDomainService.deleteComment(commentId, memberId);
 
 		Scheduler scheduler = schedulerDomainService.findById(comment.getScheduler().getId());
 
 		schedulerDomainService.minusCommentCount(scheduler);
 
-		return CommentDto.from(comment);
+		CommentDto commentDto = CommentDto.from(comment);
+
+		return CommonResponse.of("해당 일정의 해당 댓글 삭제 성공", commentDto);
 	}
 
 }

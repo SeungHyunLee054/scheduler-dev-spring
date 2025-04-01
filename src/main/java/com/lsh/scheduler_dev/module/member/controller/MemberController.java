@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.lsh.scheduler_dev.common.constants.SessionConstants;
 import com.lsh.scheduler_dev.common.constants.SessionExpiredConstant;
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.member.dto.MemberAuthDto;
 import com.lsh.scheduler_dev.module.member.dto.request.MemberCreateDto;
 import com.lsh.scheduler_dev.module.member.dto.request.MemberSignInDto;
@@ -36,13 +37,13 @@ public class MemberController {
 	private final SessionExpiredConstant sessionExpiredConstant;
 
 	@PostMapping("/signup")
-	public ResponseEntity<MemberDto> signUp(@Valid @RequestBody MemberCreateDto memberCreateDto) {
+	public ResponseEntity<CommonResponse<MemberDto>> signUp(@Valid @RequestBody MemberCreateDto memberCreateDto) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(memberService.saveMember(memberCreateDto));
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<?> signIn(
+	public ResponseEntity<CommonResponse<String>> signIn(
 		@Valid @RequestBody MemberSignInDto memberSignInDto,
 		HttpServletRequest request
 	) {
@@ -51,11 +52,11 @@ public class MemberController {
 		session.setAttribute(SessionConstants.AUTHORIZATION, memberAuthDto);
 		session.setMaxInactiveInterval(sessionExpiredConstant.getSessionExpiredTime());
 
-		return ResponseEntity.ok("logged in");
+		return ResponseEntity.ok(CommonResponse.of("로그인 성공", session.getId()));
 	}
 
 	@GetMapping
-	public ResponseEntity<ListResponse<MemberDto>> getAllMembers(
+	public ResponseEntity<CommonResponses<MemberDto>> getAllMembers(
 		@RequestParam(defaultValue = "0") Integer pageIdx,
 		@RequestParam(defaultValue = "10") Integer pageSize
 	) {
@@ -63,7 +64,7 @@ public class MemberController {
 	}
 
 	@PutMapping
-	public ResponseEntity<MemberDto> updateMember(
+	public ResponseEntity<CommonResponse<MemberDto>> updateMember(
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody MemberUpdateDto memberUpdateDto
 	) {
@@ -71,7 +72,7 @@ public class MemberController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<MemberDto> deleteMember(
+	public ResponseEntity<CommonResponse<MemberDto>> deleteMember(
 		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
 		HttpServletRequest request
 	) {

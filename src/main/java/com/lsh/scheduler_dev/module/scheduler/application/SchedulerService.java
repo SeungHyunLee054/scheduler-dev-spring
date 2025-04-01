@@ -4,7 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.lsh.scheduler_dev.common.response.ListResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponse;
+import com.lsh.scheduler_dev.common.response.CommonResponses;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.member.service.MemberService;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
@@ -30,12 +31,14 @@ public class SchedulerService {
 	 * @return 일정 정보
 	 */
 	@Transactional
-	public SchedulerDto saveScheduler(Long memberId, SchedulerCreateDto schedulerCreateDto) {
+	public CommonResponse<SchedulerDto> saveScheduler(Long memberId, SchedulerCreateDto schedulerCreateDto) {
 		Member member = memberService.findById(memberId);
 
 		Scheduler scheduler = schedulerDomainService.saveScheduler(member, schedulerCreateDto);
 
-		return SchedulerDto.from(scheduler);
+		SchedulerDto schedulerDto = SchedulerDto.from(scheduler);
+
+		return CommonResponse.of("일정 생성 성공", schedulerDto);
 	}
 
 	/**
@@ -44,11 +47,11 @@ public class SchedulerService {
 	 * @param pageable 페이지 값
 	 * @return Page에서 원하는 정보 값만 담은 List를 반환
 	 */
-	public ListResponse<SchedulerDto> getAllSchedulers(Pageable pageable) {
+	public CommonResponses<SchedulerDto> getAllSchedulers(Pageable pageable) {
 		Page<Scheduler> schedulerPage = schedulerDomainService.getAllSchedulers(pageable);
 		Page<SchedulerDto> schedulerDtoPage = schedulerPage.map(SchedulerDto::from);
 
-		return ListResponse.from(schedulerDtoPage);
+		return CommonResponses.from("모든 일정 조회 성공", schedulerDtoPage);
 	}
 
 	/**
@@ -60,10 +63,14 @@ public class SchedulerService {
 	 * @return 일정 정보
 	 */
 	@Transactional
-	public SchedulerDto updateScheduler(Long memberId, Long schedulerId, SchedulerUpdateDto schedulerUpdateDto) {
-		Scheduler updatedScheduler = schedulerDomainService.updateScheduler(memberId, schedulerId, schedulerUpdateDto);
+	public CommonResponse<SchedulerDto> updateScheduler(Long memberId, Long schedulerId,
+		SchedulerUpdateDto schedulerUpdateDto) {
+		Scheduler updatedScheduler =
+			schedulerDomainService.updateScheduler(memberId, schedulerId, schedulerUpdateDto);
 
-		return SchedulerDto.from(updatedScheduler);
+		SchedulerDto schedulerDto = SchedulerDto.from(updatedScheduler);
+
+		return CommonResponse.of("일정 수정 성공", schedulerDto);
 	}
 
 	/**
@@ -74,10 +81,12 @@ public class SchedulerService {
 	 * @return 삭제된 일정 정보
 	 */
 	@Transactional
-	public SchedulerDto deleteScheduler(Long memberId, Long schedulerId) {
+	public CommonResponse<SchedulerDto> deleteScheduler(Long memberId, Long schedulerId) {
 		Scheduler deletedScheduler = schedulerDomainService.deleteScheduler(memberId, schedulerId);
 
-		return SchedulerDto.from(deletedScheduler);
+		SchedulerDto schedulerDto = SchedulerDto.from(deletedScheduler);
+
+		return CommonResponse.of("일정 삭제 성공", schedulerDto);
 	}
 
 }
