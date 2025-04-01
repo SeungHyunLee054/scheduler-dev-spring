@@ -35,7 +35,7 @@ public class CommentController {
 	@PostMapping
 	public ResponseEntity<CommonResponse<CommentDto>> createComment(
 		@RequestParam Long schedulerId,
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody CommentCreateDto commentCreateDto
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -55,7 +55,7 @@ public class CommentController {
 	@PutMapping("/{commentId}")
 	public ResponseEntity<CommonResponse<CommentDto>> updateComment(
 		@PathVariable Long commentId,
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody CommentUpdateDto commentUpdateDto
 	) {
 		return ResponseEntity.ok(commentService
@@ -65,7 +65,7 @@ public class CommentController {
 	@DeleteMapping("/{commentId}")
 	public ResponseEntity<CommonResponse<CommentDto>> deleteComment(
 		@PathVariable Long commentId,
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto
 	) {
 		return ResponseEntity.ok(commentService.deleteComment(commentId, memberAuthDto.getMemberId()));
 	}

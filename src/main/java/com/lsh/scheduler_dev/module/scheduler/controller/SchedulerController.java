@@ -34,7 +34,7 @@ public class SchedulerController {
 
 	@PostMapping
 	public ResponseEntity<CommonResponse<SchedulerDto>> createScheduler(
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody SchedulerCreateDto schedulerCreateDto
 	) {
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -51,7 +51,7 @@ public class SchedulerController {
 
 	@PutMapping("/{schedulerId}")
 	public ResponseEntity<CommonResponse<SchedulerDto>> updateScheduler(
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		@PathVariable Long schedulerId,
 		@Valid @RequestBody SchedulerUpdateDto schedulerUpdateDto
 	) {
@@ -61,7 +61,7 @@ public class SchedulerController {
 
 	@DeleteMapping("{schedulerId}")
 	public ResponseEntity<CommonResponse<SchedulerDto>> deleteScheduler(
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		@PathVariable Long schedulerId
 	) {
 		return ResponseEntity.ok(schedulerService.deleteScheduler(memberAuthDto.getMemberId(), schedulerId));

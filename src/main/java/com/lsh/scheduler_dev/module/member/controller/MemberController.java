@@ -65,7 +65,7 @@ public class MemberController {
 
 	@PutMapping
 	public ResponseEntity<CommonResponse<MemberDto>> updateMember(
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		@Valid @RequestBody MemberUpdateDto memberUpdateDto
 	) {
 		return ResponseEntity.ok(memberService.updateMember(memberAuthDto.getMemberId(), memberUpdateDto));
@@ -73,7 +73,7 @@ public class MemberController {
 
 	@DeleteMapping
 	public ResponseEntity<CommonResponse<MemberDto>> deleteMember(
-		@SessionAttribute(name = SessionConstants.AUTHORIZATION, required = false) MemberAuthDto memberAuthDto,
+		@SessionAttribute(name = SessionConstants.AUTHORIZATION) MemberAuthDto memberAuthDto,
 		HttpServletRequest request
 	) {
 		request.getSession().removeAttribute(SessionConstants.AUTHORIZATION);
