@@ -55,6 +55,12 @@ class CommentDomainServiceTest {
     @DisplayName("댓글 생성 성공")
     void success_saveComment() {
         // Given
+        given(commentCreateDto.getContent())
+                .willReturn("test");
+
+        given(comment.getContent())
+                .willReturn("test");
+
         given(commentRepository.save(any()))
                 .willReturn(comment);
 
@@ -142,7 +148,10 @@ class CommentDomainServiceTest {
                         .id(1L)
                         .member(Member.builder()
                                 .id(1L)
+                                .email("test@test")
+                                .password("testtest")
                                 .build())
+                        .content("test")
                         .build()));
 
 
@@ -198,7 +207,10 @@ class CommentDomainServiceTest {
                         .id(1L)
                         .member(Member.builder()
                                 .id(1L)
+                                .email("test@test")
+                                .password("testtest")
                                 .build())
+                        .content("test")
                         .build()));
 
 

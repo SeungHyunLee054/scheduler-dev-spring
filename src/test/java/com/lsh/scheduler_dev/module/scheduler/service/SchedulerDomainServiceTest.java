@@ -52,6 +52,11 @@ class SchedulerDomainServiceTest {
     @DisplayName("일정 생성 성공")
     void success_saveScheduler() {
         // Given
+        given(schedulerCreateDto.getTitle())
+                .willReturn("test");
+        given(schedulerCreateDto.getContent())
+                .willReturn("test");
+
         given(scheduler.getTitle())
                 .willReturn("test");
         given(scheduler.getContent())
@@ -152,7 +157,11 @@ class SchedulerDomainServiceTest {
                         .id(1L)
                         .member(Member.builder()
                                 .id(1L)
+                                .email("test@test")
+                                .password("testtest")
                                 .build())
+                        .title("test")
+                        .content("test")
                         .build()));
 
         // When
@@ -215,7 +224,11 @@ class SchedulerDomainServiceTest {
                         .id(1L)
                         .member(Member.builder()
                                 .id(1L)
+                                .email("test@test")
+                                .password("testtest")
                                 .build())
+                        .title("test")
+                        .content("test")
                         .build()));
 
         // When
@@ -231,7 +244,11 @@ class SchedulerDomainServiceTest {
     @DisplayName("댓글 수 증가 성공")
     void success_plusCommentCount() {
         // Given
-        Scheduler s = Scheduler.builder().commentCount(0).build();
+        Scheduler s = Scheduler.builder()
+                .title("test")
+                .content("test")
+                .commentCount(0)
+                .build();
 
         // When
         schedulerDomainService.plusCommentCount(s);
@@ -245,7 +262,11 @@ class SchedulerDomainServiceTest {
     @DisplayName("댓글 수 감소 성공")
     void success_minusCommentCount() {
         // Given
-        Scheduler s = Scheduler.builder().commentCount(1).build();
+        Scheduler s = Scheduler.builder()
+                .title("test")
+                .content("test")
+                .commentCount(0)
+                .build();
 
         // When
         schedulerDomainService.minusCommentCount(s);
