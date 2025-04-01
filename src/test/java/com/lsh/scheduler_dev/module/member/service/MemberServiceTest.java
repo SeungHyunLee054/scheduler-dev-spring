@@ -252,5 +252,4 @@ class MemberServiceTest {
 		assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());
 
 	}
-
 }

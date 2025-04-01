@@ -241,17 +241,17 @@ class SchedulerDomainServiceTest {
 	@DisplayName("댓글 수 증가 성공")
 	void success_plusCommentCount() {
 		// Given
-		Scheduler s = Scheduler.builder()
+		Scheduler testInput = Scheduler.builder()
 			.title("test")
 			.content("test")
 			.commentCount(0)
 			.build();
 
 		// When
-		schedulerDomainService.plusCommentCount(s);
+		schedulerDomainService.plusCommentCount(testInput);
 
 		// Then
-		assertEquals(1, s.getCommentCount());
+		assertEquals(1, testInput.getCommentCount());
 
 	}
 
@@ -259,17 +259,17 @@ class SchedulerDomainServiceTest {
 	@DisplayName("댓글 수 감소 성공")
 	void success_minusCommentCount() {
 		// Given
-		Scheduler s = Scheduler.builder()
+		Scheduler testInput = Scheduler.builder()
 			.title("test")
 			.content("test")
 			.commentCount(0)
 			.build();
 
 		// When
-		schedulerDomainService.minusCommentCount(s);
+		schedulerDomainService.minusCommentCount(testInput);
 
 		// Then
-		assertEquals(0, s.getCommentCount());
+		assertEquals(0, testInput.getCommentCount());
 
 	}
 }
