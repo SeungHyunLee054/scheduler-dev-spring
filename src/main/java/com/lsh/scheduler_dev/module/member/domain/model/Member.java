@@ -7,17 +7,14 @@ import com.lsh.scheduler_dev.module.member.exception.MemberException;
 import com.lsh.scheduler_dev.module.member.exception.MemberExceptionCode;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class Member extends BaseEntity {
     @Id
@@ -28,9 +25,11 @@ public class Member extends BaseEntity {
     private String name;
 
     @Column(nullable = false, unique = true)
+    @NonNull
     private String email;
 
     @Column(nullable = false)
+    @NonNull
     private String password;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

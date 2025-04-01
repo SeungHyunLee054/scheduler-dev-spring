@@ -6,10 +6,7 @@ import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerException;
 import com.lsh.scheduler_dev.module.scheduler.exception.SchedulerExceptionCode;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -28,9 +25,11 @@ public class Scheduler extends BaseEntity {
     private Member member;
 
     @Column(nullable = false)
+    @NonNull
     private String title;
 
     @Column(nullable = false)
+    @NonNull
     private String content;
 
     private int commentCount;

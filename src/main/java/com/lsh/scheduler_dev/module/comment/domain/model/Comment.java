@@ -6,10 +6,7 @@ import com.lsh.scheduler_dev.module.comment.exception.CommentExceptionCode;
 import com.lsh.scheduler_dev.module.member.domain.model.Member;
 import com.lsh.scheduler_dev.module.scheduler.domain.model.Scheduler;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -22,6 +19,7 @@ public class Comment extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @NonNull
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
