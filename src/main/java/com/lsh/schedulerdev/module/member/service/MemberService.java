@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
-import com.lsh.schedulerdev.common.utils.password.PasswordUtils;
 import com.lsh.schedulerdev.module.member.domain.model.Member;
 import com.lsh.schedulerdev.module.member.dto.MemberAuthDto;
 import com.lsh.schedulerdev.module.member.dto.request.MemberCreateDto;
@@ -18,12 +17,16 @@ import com.lsh.schedulerdev.module.member.exception.MemberExceptionCode;
 import com.lsh.schedulerdev.module.member.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class MemberService {
 	private final MemberRepository memberRepository;
+	private final PasswordEncoder passwordEncoder;
+
+	public MemberService(MemberRepository memberRepository) {
+		this.memberRepository = memberRepository;
+		this.passwordEncoder = new Sha3PasswordEncoder();
+	}
 
 	/**
 	 * 회원 가입
@@ -40,7 +43,7 @@ public class MemberService {
 		Member savedMember = memberRepository.save(Member.builder()
 			.name(memberCreateDto.getName())
 			.email(memberCreateDto.getEmail())
-			.password(PasswordUtils.encryptPassword(memberCreateDto.getPassword()))
+			.password(passwordEncoder.encode(memberCreateDto.getPassword()))
 			.build());
 
 		MemberDto memberDto = MemberDto.from(savedMember);
@@ -88,7 +91,7 @@ public class MemberService {
 	public CommonResponse<MemberDto> updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
 		Member member = findById(memberId);
 
-		member.updateMember(memberUpdateDto.getName(), PasswordUtils.encryptPassword(memberUpdateDto.getPassword()));
+		member.updateMember(memberUpdateDto.getName(), passwordEncoder.encode(memberUpdateDto.getPassword()));
 
 		MemberDto memberDto = MemberDto.from(member);
 

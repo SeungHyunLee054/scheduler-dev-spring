@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.lsh.schedulerdev.common.exception.BaseException;
 import com.lsh.schedulerdev.common.exception.dto.ErrorResponse;
-import com.lsh.schedulerdev.common.utils.log.LogErrorUtils;
+import com.lsh.schedulerdev.common.utils.LogUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,8 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 	@ExceptionHandler(BaseException.class)
 	public ResponseEntity<ErrorResponse> customExceptionHandler(BaseException baseException) {
-		log.error("예외 발생: {} (ErrorCode: {})", baseException.getMessage(), baseException.getErrorCode());
-		LogErrorUtils.logError(baseException);
+		LogUtils.logError(baseException);
 
 		return ResponseEntity.status(baseException.getHttpStatus())
 			.body(ErrorResponse.builder()

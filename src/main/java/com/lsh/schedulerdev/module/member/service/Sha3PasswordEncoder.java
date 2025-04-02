@@ -1,4 +1,4 @@
-package com.lsh.schedulerdev.common.utils.password;
+package com.lsh.schedulerdev.module.member.service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -9,15 +9,16 @@ import java.util.Objects;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.lsh.schedulerdev.common.utils.password.exception.PasswordUtilsException;
-import com.lsh.schedulerdev.common.utils.password.exception.PasswordUtilsExceptionCode;
+import com.lsh.schedulerdev.module.member.exception.PasswordEncoderException;
+import com.lsh.schedulerdev.module.member.exception.PasswordEncoderExceptionCode;
 
-public class PasswordUtils {
+public class Sha3PasswordEncoder implements PasswordEncoder {
 	private static final String ALG = "HmacSHA3-256";
 	private static final int ITERATIONS = 1000;
 	private static final String SALT = "salt";
 
-	public static String encryptPassword(String password) {
+	@Override
+	public String encode(String password) {
 		try {
 			SecretKeySpec keySpec = new SecretKeySpec(SALT.getBytes(StandardCharsets.UTF_8), ALG);
 			Mac mac = Mac.getInstance(ALG);
@@ -30,14 +31,15 @@ public class PasswordUtils {
 
 			return Base64.getEncoder().encodeToString(hashedPassword);
 		} catch (InvalidKeyException | NoSuchAlgorithmException e) {
-			throw new PasswordUtilsException(PasswordUtilsExceptionCode.ENCRYPT_ERROR);
+			throw new PasswordEncoderException(PasswordEncoderExceptionCode.ENCRYPT_ERROR);
 		} catch (Exception e) {
-			throw new PasswordUtilsException(PasswordUtilsExceptionCode.UNEXPECTED_ERROR);
+			throw new PasswordEncoderException(PasswordEncoderExceptionCode.UNEXPECTED_ERROR);
 		}
 	}
 
-	public static boolean matches(String rawPassword, String encodedPassword) {
-		String hashedPassword = encryptPassword(rawPassword);
+	@Override
+	public boolean matches(String rawPassword, String encodedPassword) {
+		String hashedPassword = encode(rawPassword);
 		return Objects.equals(hashedPassword, encodedPassword);
 	}
 
