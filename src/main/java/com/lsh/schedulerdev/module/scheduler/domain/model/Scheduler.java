@@ -70,4 +70,12 @@ public class Scheduler extends BaseEntity {
 		}
 	}
 
+	public Long getMemberId() {
+		return this.member.getId();
+	}
+
+	public String getMemberName() {
+		return this.member.getName();
+	}
+
 }

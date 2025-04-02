@@ -51,4 +51,12 @@ public class Comment extends BaseEntity {
 			throw new CommentException(CommentExceptionCode.USER_MISMATCH);
 		}
 	}
+
+	public Long getMemberId() {
+		return this.member.getId();
+	}
+
+	public Long getSchedulerId() {
+		return this.scheduler.getId();
+	}
 }

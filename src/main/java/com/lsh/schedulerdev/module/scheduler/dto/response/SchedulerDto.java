@@ -22,8 +22,8 @@ public class SchedulerDto {
 	public static SchedulerDto from(Scheduler scheduler) {
 		return SchedulerDto.builder()
 			.schedulerId(scheduler.getId())
-			.memberId(scheduler.getMember().getId())
-			.name(scheduler.getMember().getName())
+			.memberId(scheduler.getMemberId())
+			.name(scheduler.getMemberName())
 			.title(scheduler.getTitle())
 			.content(scheduler.getContent())
 			.commentCount(scheduler.getCommentCount())

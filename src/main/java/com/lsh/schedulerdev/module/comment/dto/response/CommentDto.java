@@ -20,8 +20,8 @@ public class CommentDto {
 	public static CommentDto from(Comment comment) {
 		return CommentDto.builder()
 			.commentId(comment.getId())
-			.memberId(comment.getMember().getId())
-			.schedulerId(comment.getScheduler().getId())
+			.memberId(comment.getMemberId())
+			.schedulerId(comment.getSchedulerId())
 			.content(comment.getContent())
 			.createdAt(comment.getCreatedAt())
 			.modifiedAt(comment.getModifiedAt())
