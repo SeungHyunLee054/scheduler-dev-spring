@@ -62,7 +62,7 @@ public class MemberService {
 		Member member = memberRepository.findByEmail(memberSignInDto.getEmail())
 			.orElseThrow(() -> new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
 
-		member.checkPassword(memberSignInDto.getPassword());
+		member.checkPassword(passwordEncoder, memberSignInDto.getPassword());
 
 		return MemberAuthDto.from(member);
 	}

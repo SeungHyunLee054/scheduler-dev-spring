@@ -7,7 +7,6 @@ import com.lsh.schedulerdev.module.comment.domain.model.Comment;
 import com.lsh.schedulerdev.module.member.exception.MemberException;
 import com.lsh.schedulerdev.module.member.exception.MemberExceptionCode;
 import com.lsh.schedulerdev.module.member.service.PasswordEncoder;
-import com.lsh.schedulerdev.module.member.service.Sha3PasswordEncoder;
 import com.lsh.schedulerdev.module.scheduler.domain.model.Scheduler;
 
 import jakarta.persistence.CascadeType;
@@ -56,9 +55,7 @@ public class Member extends BaseEntity {
 		this.password = password;
 	}
 
-	public void checkPassword(String password) {
-		PasswordEncoder passwordEncoder = new Sha3PasswordEncoder();
-
+	public void checkPassword(PasswordEncoder passwordEncoder, String password) {
 		if (!passwordEncoder.matches(password, this.password)) {
 			throw new MemberException(MemberExceptionCode.FAIL_SIGN_IN);
 		}
