@@ -81,7 +81,7 @@
 
 ### Framework
 
-- SpringBoot 3.4.3
+- SpringBoot 3.4.4
 
 ### Build Tool
 
@@ -98,7 +98,7 @@
 │   ├───java
 │   │   └───com
 │   │       └───lsh
-│   │           └───scheduler_dev
+│   │           └───schedulerdev
 │   │               ├───common
 │   │               │   ├───aop
 │   │               │   ├───audit
@@ -154,7 +154,7 @@
     └───java
         └───com
             └───lsh
-                └───scheduler_dev
+                └───schedulerdev
                     └───module
                         ├───comment
                         │   ├───application
