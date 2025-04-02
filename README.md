@@ -111,9 +111,6 @@
 │   │               │   │   └───exception
 │   │               │   ├───response
 │   │               │   └───utils
-│   │               │       ├───log
-│   │               │       └───password
-│   │               │           └───exception
 │   │               └───module
 │   │                   ├───comment
 │   │                   │   ├───application
