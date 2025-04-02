@@ -43,8 +43,6 @@ class SchedulerServiceTest {
 	@DisplayName("일정 생성 성공")
 	void success_saveScheduler() {
 		// Given
-		given(scheduler.getMember())
-			.willReturn(member);
 		given(memberService.findById(anyLong()))
 			.willReturn(member);
 		given(schedulerDomainService.saveScheduler(any(), any()))

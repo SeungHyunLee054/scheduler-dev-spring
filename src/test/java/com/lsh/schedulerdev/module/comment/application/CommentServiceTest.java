@@ -53,14 +53,6 @@ class CommentServiceTest {
 	@DisplayName("댓글 생성 성공")
 	void success_saveComment() {
 		// Given
-		given(comment.getMember())
-			.willReturn(member);
-		given(comment.getScheduler())
-			.willReturn(scheduler);
-
-		given(member.getId())
-			.willReturn(1L);
-
 		given(memberService.findById(anyLong()))
 			.willReturn(member);
 		given(schedulerDomainService.findById(anyLong()))
