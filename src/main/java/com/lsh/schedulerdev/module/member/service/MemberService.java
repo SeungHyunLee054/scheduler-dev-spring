@@ -30,9 +30,8 @@ public class MemberService {
 
 	/**
 	 * 회원 가입
-	 *
 	 * @param memberCreateDto 가입하려는 유저 정보
-	 * @return 유저 정보
+	 * @return 메세지, 유저 정보
 	 */
 	@Transactional
 	public CommonResponse<MemberDto> saveMember(MemberCreateDto memberCreateDto) {
@@ -51,9 +50,8 @@ public class MemberService {
 
 	/**
 	 * 로그인
-	 *
 	 * @param memberSignInDto 이메일과 비밀번호
-	 * @return 유저의 id와 email 값
+	 * @return 메세지, 유저의 id와 email 값
 	 */
 	@Transactional
 	public MemberAuthDto signIn(MemberSignInDto memberSignInDto) {
@@ -67,9 +65,8 @@ public class MemberService {
 
 	/**
 	 * 모든 유저 조회
-	 *
 	 * @param pageable 페이지 값
-	 * @return Page에서 원하는 정보 값만 담은 List를 반환
+	 * @return 메세지, Page에서 원하는 정보 값만 담은 List를 반환
 	 */
 	public CommonResponses<MemberDto> getAllMembers(Pageable pageable) {
 		Page<MemberDto> memberDtoPage = memberRepository.findAllByOrderByModifiedAtDesc(pageable)
@@ -80,10 +77,9 @@ public class MemberService {
 
 	/**
 	 * 유저 수정
-	 *
 	 * @param memberId        유저 id
 	 * @param memberUpdateDto 수정할 내용
-	 * @return 유저 정보
+	 * @return 메세지, 유저 정보
 	 */
 	@Transactional
 	public CommonResponse<MemberDto> updateMember(Long memberId, MemberUpdateDto memberUpdateDto) {
@@ -96,9 +92,8 @@ public class MemberService {
 
 	/**
 	 * 유저 삭제
-	 *
 	 * @param memberId 유저 id
-	 * @return 삭제된 유저 정보
+	 * @return 메세지, 삭제된 유저 id
 	 */
 	@Transactional
 	public CommonResponse<Long> deleteMember(Long memberId) {
@@ -111,9 +106,8 @@ public class MemberService {
 
 	/**
 	 * 유저 조회
-	 *
 	 * @param memberId 유저 id
-	 * @return id 값으로 조회된 유저
+	 * @return 메세지, id 값으로 조회된 유저
 	 */
 	public Member findById(Long memberId) {
 		return memberRepository.findById(memberId)

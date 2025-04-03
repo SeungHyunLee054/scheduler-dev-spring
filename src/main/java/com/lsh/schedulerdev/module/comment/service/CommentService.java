@@ -33,7 +33,7 @@ public class CommentService {
 	 * @param schedulerId      일정 id
 	 * @param memberId         유저 id
 	 * @param commentCreateDto 작성하려는 댓글 내용
-	 * @return 댓글 정보
+	 * @return 메세지, 댓글 정보
 	 */
 	@Transactional
 	public CommonResponse<CommentDto> saveComment(Long schedulerId, Long memberId, CommentCreateDto commentCreateDto) {
@@ -55,7 +55,7 @@ public class CommentService {
 	 * 모든 댓글 조회
 	 * @param schedulerId 일정 id
 	 * @param pageable    페이지 값
-	 * @return Page에서 원하는 정보 값만 담은 List를 반환
+	 * @return 메세지, Page에서 원하는 정보 값만 담은 List를 반환
 	 */
 	public CommonResponses<CommentDto> getAllCommentsByScheduler(Long schedulerId, Pageable pageable) {
 		Page<CommentDto> commentDtoPage =
@@ -70,7 +70,7 @@ public class CommentService {
 	 * @param commentId        댓글 id
 	 * @param memberId         유저 id
 	 * @param commentUpdateDto 수정할 내용
-	 * @return 댓글 정보
+	 * @return 메세지, 댓글 정보
 	 */
 	@Transactional
 	public CommonResponse<CommentDto> updateComment(Long commentId, Long memberId, CommentUpdateDto commentUpdateDto) {
@@ -87,7 +87,7 @@ public class CommentService {
 	 * 댓글 삭제
 	 * @param commentId 댓글 id
 	 * @param memberId  유저 id
-	 * @return 삭제된 댓글 id
+	 * @return 메세지, 삭제된 댓글 id
 	 */
 	@Transactional
 	public CommonResponse<Long> deleteComment(Long commentId, Long memberId) {
@@ -107,7 +107,7 @@ public class CommentService {
 	/**
 	 * 댓글 조회
 	 * @param commentId 댓글 id
-	 * @return id 값으로 조회된 댓글
+	 * @return 메세지, id 값으로 조회된 댓글
 	 */
 	private Comment findById(Long commentId) {
 		return commentRepository.findById(commentId)
