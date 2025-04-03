@@ -111,36 +111,31 @@
 │   │               │   │   └───exception
 │   │               │   ├───response
 │   │               │   └───utils
-│   │               └───module
+│   │               └───domain
 │   │                   ├───comment
-│   │                   │   ├───application
 │   │                   │   ├───controller
-│   │                   │   ├───domain
-│   │                   │   │   └───model
 │   │                   │   ├───dto
 │   │                   │   │   ├───request
 │   │                   │   │   └───response
+│   │                   │   ├───entity
 │   │                   │   ├───exception
 │   │                   │   ├───repository
 │   │                   │   └───service
 │   │                   ├───member
 │   │                   │   ├───controller
-│   │                   │   ├───domain
-│   │                   │   │   └───model
 │   │                   │   ├───dto
 │   │                   │   │   ├───request
 │   │                   │   │   └───response
+│   │                   │   ├───entity
 │   │                   │   ├───exception
 │   │                   │   ├───repository
 │   │                   │   └───service
 │   │                   └───scheduler
-│   │                       ├───application
 │   │                       ├───controller
-│   │                       ├───domain
-│   │                       │   └───model
 │   │                       ├───dto
 │   │                       │   ├───request
 │   │                       │   └───response
+│   │                       ├───entity
 │   │                       ├───exception
 │   │                       ├───repository
 │   │                       └───service
@@ -152,16 +147,14 @@
         └───com
             └───lsh
                 └───schedulerdev
-                    └───module
+                    └───domain
                         ├───comment
-                        │   ├───application
                         │   ├───controller
                         │   └───service
                         ├───member
                         │   ├───controller
                         │   └───service
                         └───scheduler
-                            ├───application
                             ├───controller
                             └───service
 ````
