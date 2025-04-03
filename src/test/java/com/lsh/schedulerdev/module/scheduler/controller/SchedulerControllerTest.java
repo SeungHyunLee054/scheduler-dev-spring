@@ -23,9 +23,9 @@ import com.lsh.schedulerdev.common.constants.SessionConstants;
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
 import com.lsh.schedulerdev.module.member.dto.MemberAuthDto;
-import com.lsh.schedulerdev.module.scheduler.application.SchedulerService;
 import com.lsh.schedulerdev.module.scheduler.dto.request.SchedulerUpdateDto;
 import com.lsh.schedulerdev.module.scheduler.dto.response.SchedulerDto;
+import com.lsh.schedulerdev.module.scheduler.service.SchedulerService;
 
 @WebMvcTest(controllers = SchedulerController.class)
 class SchedulerControllerTest {

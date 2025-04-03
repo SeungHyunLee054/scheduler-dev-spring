@@ -22,10 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsh.schedulerdev.common.constants.SessionConstants;
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
-import com.lsh.schedulerdev.module.comment.application.CommentService;
 import com.lsh.schedulerdev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.schedulerdev.module.comment.dto.request.CommentUpdateDto;
 import com.lsh.schedulerdev.module.comment.dto.response.CommentDto;
+import com.lsh.schedulerdev.module.comment.service.CommentService;
 import com.lsh.schedulerdev.module.member.dto.MemberAuthDto;
 
 @WebMvcTest(controllers = {CommentController.class})

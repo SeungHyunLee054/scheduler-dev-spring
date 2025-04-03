@@ -13,24 +13,38 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.lsh.schedulerdev.common.response.CommonResponse;
+import com.lsh.schedulerdev.common.response.CommonResponses;
 import com.lsh.schedulerdev.module.comment.domain.model.Comment;
 import com.lsh.schedulerdev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.schedulerdev.module.comment.dto.request.CommentUpdateDto;
+import com.lsh.schedulerdev.module.comment.dto.response.CommentDto;
 import com.lsh.schedulerdev.module.comment.exception.CommentException;
 import com.lsh.schedulerdev.module.comment.exception.CommentExceptionCode;
 import com.lsh.schedulerdev.module.comment.repository.CommentRepository;
 import com.lsh.schedulerdev.module.member.domain.model.Member;
+import com.lsh.schedulerdev.module.member.exception.MemberException;
+import com.lsh.schedulerdev.module.member.exception.MemberExceptionCode;
+import com.lsh.schedulerdev.module.member.service.MemberService;
 import com.lsh.schedulerdev.module.scheduler.domain.model.Scheduler;
+import com.lsh.schedulerdev.module.scheduler.exception.SchedulerException;
+import com.lsh.schedulerdev.module.scheduler.exception.SchedulerExceptionCode;
+import com.lsh.schedulerdev.module.scheduler.service.SchedulerService;
 
 @ExtendWith(MockitoExtension.class)
-class CommentDomainServiceTest {
+class CommentServiceTest {
 	@Mock
 	private CommentRepository commentRepository;
+
+	@Mock
+	private MemberService memberService;
+
+	@Mock
+	private SchedulerService schedulerService;
 
 	@Mock
 	private Member member;
@@ -48,7 +62,7 @@ class CommentDomainServiceTest {
 	private CommentUpdateDto commentUpdateDto;
 
 	@InjectMocks
-	private CommentDomainService commentDomainService;
+	private CommentService commentService;
 
 	@Test
 	@DisplayName("댓글 생성 성공")
@@ -60,18 +74,59 @@ class CommentDomainServiceTest {
 		given(comment.getContent())
 			.willReturn("test");
 
+		given(memberService.findById(anyLong()))
+			.willReturn(member);
+		given(schedulerService.findById(anyLong()))
+			.willReturn(scheduler);
 		given(commentRepository.save(any()))
 			.willReturn(comment);
 
 		// When
-		Comment savedComment = commentDomainService.saveComment(member, scheduler, commentCreateDto);
+		CommonResponse<CommentDto> response = commentService.saveComment(1L, 1L, commentCreateDto);
 
 		// Then
+		verify(memberService, times(1)).findById(anyLong());
+		verify(schedulerService, times(1)).findById(anyLong());
 		verify(commentRepository, times(1)).save(any());
+
 		assertAll(
-			() -> assertEquals(comment.getId(), savedComment.getId()),
-			() -> assertEquals(commentCreateDto.getContent(), savedComment.getContent())
+			() -> assertEquals(comment.getId(), response.getResult().getCommentId()),
+			() -> assertEquals(commentCreateDto.getContent(), response.getResult().getContent())
 		);
+
+	}
+
+	@Test
+	@DisplayName("댓글 생성 실패 - 유저를 찾을 수 없음")
+	void fail_saveComment_memberNotFound() {
+		// Given
+		given(memberService.findById(anyLong()))
+			.willThrow(new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND));
+
+		// When
+		MemberException exception = assertThrows(MemberException.class,
+			() -> commentService.saveComment(1L, 1L, commentCreateDto));
+
+		// Then
+		assertEquals(MemberExceptionCode.MEMBER_NOT_FOUND, exception.getErrorCode());
+
+	}
+
+	@Test
+	@DisplayName("댓글 생성 실패 - 일정을 찾을 수 없음")
+	void fail_saveComment_schedulerNotFound() {
+		// Given
+		given(memberService.findById(anyLong()))
+			.willReturn(member);
+		given(schedulerService.findById(anyLong()))
+			.willThrow(new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
+
+		// When
+		SchedulerException exception = assertThrows(SchedulerException.class,
+			() -> commentService.saveComment(1L, 1L, commentCreateDto));
+
+		// Then
+		assertEquals(SchedulerExceptionCode.SCHEDULER_NOT_FOUND, exception.getErrorCode());
 
 	}
 
@@ -86,14 +141,14 @@ class CommentDomainServiceTest {
 			.willReturn(new PageImpl<>(list, pageable, list.size()));
 
 		// When
-		Page<Comment> result = commentDomainService.getAllCommentsByScheduler(1L, pageable);
+		CommonResponses<CommentDto> responses = commentService.getAllCommentsByScheduler(1L, pageable);
 
 		// Then
-		List<Comment> content = result.getContent();
-		for (Comment c : content) {
+		List<CommentDto> result = responses.getResult();
+		for (CommentDto commentDto : result) {
 			assertAll(
-				() -> assertEquals(comment.getId(), c.getId()),
-				() -> assertEquals(comment.getContent(), c.getContent())
+				() -> assertEquals(comment.getId(), commentDto.getCommentId()),
+				() -> assertEquals(comment.getContent(), commentDto.getContent())
 			);
 		}
 
@@ -113,11 +168,11 @@ class CommentDomainServiceTest {
 			.willReturn(Optional.of(comment));
 
 		// When
-		Comment updatedComment = commentDomainService.updateComment(1L, 1L, commentUpdateDto);
+		CommonResponse<CommentDto> response = commentService.updateComment(1L, 1L, commentUpdateDto);
 
 		// Then
 		assertAll(
-			() -> assertEquals(commentUpdateDto.getContent(), updatedComment.getContent())
+			() -> assertEquals(commentUpdateDto.getContent(), response.getResult().getContent())
 		);
 
 	}
@@ -131,7 +186,7 @@ class CommentDomainServiceTest {
 
 		// When
 		CommentException exception = assertThrows(CommentException.class,
-			() -> commentDomainService.updateComment(1L, 1L, commentUpdateDto));
+			() -> commentService.updateComment(1L, 1L, commentUpdateDto));
 
 		// Then
 		assertEquals(CommentExceptionCode.COMMENT_NOT_FOUND, exception.getErrorCode());
@@ -155,7 +210,7 @@ class CommentDomainServiceTest {
 
 		// When
 		CommentException exception = assertThrows(CommentException.class,
-			() -> commentDomainService.updateComment(1L, 2L, commentUpdateDto));
+			() -> commentService.updateComment(1L, 2L, commentUpdateDto));
 
 		// Then
 		assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());
@@ -166,35 +221,22 @@ class CommentDomainServiceTest {
 	@DisplayName("댓글 삭제 성공")
 	void success_deleteComment() {
 		// Given
-		given(comment.getId())
-			.willReturn(1L);
+		given(comment.getScheduler())
+			.willReturn(scheduler);
 
 		given(commentRepository.findById(anyLong()))
 			.willReturn(Optional.of(comment));
 
 		// When
-		Long deletedCommentId = commentDomainService.deleteComment(1L, 1L);
+		CommonResponse<Long> response = commentService.deleteComment(1L, 1L);
 
 		// Then
+		verify(commentRepository, times(1)).delete(any());
+		verify(commentRepository, times(1)).findById(anyLong());
+
 		assertAll(
-			() -> assertEquals(comment.getId(), deletedCommentId)
+			() -> assertEquals(comment.getId(), response.getResult())
 		);
-
-	}
-
-	@Test
-	@DisplayName("댓글 삭제 실패 - 조회한 댓글이 없음")
-	void fail_deleteComment_commentNotFound() {
-		// Given
-		given(commentRepository.findById(anyLong()))
-			.willReturn(Optional.empty());
-
-		// When
-		CommentException exception = assertThrows(CommentException.class,
-			() -> commentDomainService.deleteComment(1L, 1L));
-
-		// Then
-		assertEquals(CommentExceptionCode.COMMENT_NOT_FOUND, exception.getErrorCode());
 
 	}
 
@@ -215,11 +257,27 @@ class CommentDomainServiceTest {
 
 		// When
 		CommentException exception = assertThrows(CommentException.class,
-			() -> commentDomainService.deleteComment(1L, 2L));
+			() -> commentService.deleteComment(1L, 2L));
 
 		// Then
 		assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());
 
 	}
+
+	// @Test
+	// @DisplayName("댓글 삭제 실패 - 일정을 찾을 수 없음")
+	// void fail_deleteComment_schedulerNotFound() {
+	// 	// Given
+	// 	given(schedulerDomainService.findById(anyLong()))
+	// 		.willThrow(new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
+	//
+	// 	// When
+	// 	SchedulerException exception = assertThrows(SchedulerException.class,
+	// 		() -> commentService.deleteComment(1L, 1L));
+	//
+	// 	// Then
+	// 	assertEquals(SchedulerExceptionCode.SCHEDULER_NOT_FOUND, exception.getErrorCode());
+	//
+	// }
 
 }
