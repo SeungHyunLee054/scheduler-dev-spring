@@ -46,9 +46,7 @@ public class MemberService {
 			.password(passwordEncoder.encode(memberCreateDto.getPassword()))
 			.build());
 
-		MemberDto memberDto = MemberDto.from(savedMember);
-
-		return CommonResponse.of("회원 가입 성공", memberDto);
+		return CommonResponse.of("회원 가입 성공", MemberDto.from(savedMember));
 	}
 
 	/**
@@ -93,9 +91,7 @@ public class MemberService {
 
 		member.updateMember(memberUpdateDto.getName(), passwordEncoder.encode(memberUpdateDto.getPassword()));
 
-		MemberDto memberDto = MemberDto.from(member);
-
-		return CommonResponse.of("유저 수정 성공", memberDto);
+		return CommonResponse.of("유저 수정 성공", MemberDto.from(member));
 	}
 
 	/**

@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import com.lsh.schedulerdev.common.constants.SessionConstants;
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
-import com.lsh.schedulerdev.module.comment.application.CommentService;
 import com.lsh.schedulerdev.module.comment.dto.request.CommentCreateDto;
 import com.lsh.schedulerdev.module.comment.dto.request.CommentUpdateDto;
 import com.lsh.schedulerdev.module.comment.dto.response.CommentDto;
+import com.lsh.schedulerdev.module.comment.service.CommentService;
 import com.lsh.schedulerdev.module.member.dto.MemberAuthDto;
 
 import jakarta.validation.Valid;
