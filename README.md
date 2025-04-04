@@ -113,6 +113,7 @@
 │   │               │   └───utils
 │   │               └───domain
 │   │                   ├───comment
+│   │                   │   ├───code
 │   │                   │   ├───controller
 │   │                   │   ├───dto
 │   │                   │   │   ├───request
@@ -122,6 +123,7 @@
 │   │                   │   ├───repository
 │   │                   │   └───service
 │   │                   ├───member
+│   │                   │   ├───code
 │   │                   │   ├───controller
 │   │                   │   ├───dto
 │   │                   │   │   ├───request
@@ -131,6 +133,7 @@
 │   │                   │   ├───repository
 │   │                   │   └───service
 │   │                   └───scheduler
+│   │                       ├───code
 │   │                       ├───controller
 │   │                       ├───dto
 │   │                       │   ├───request
