@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.lsh.schedulerdev.common.exception.BaseException;
-import com.lsh.schedulerdev.common.exception.dto.ErrorResponse;
+import com.lsh.schedulerdev.common.exception.dto.ValidationError;
+import com.lsh.schedulerdev.common.response.CommonResponse;
+import com.lsh.schedulerdev.common.response.CommonResponses;
 import com.lsh.schedulerdev.common.utils.LogUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,27 +21,28 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	@ExceptionHandler(BaseException.class)
-	public ResponseEntity<ErrorResponse> customExceptionHandler(BaseException baseException) {
+	public ResponseEntity<CommonResponse<Object>> customExceptionHandler(BaseException baseException) {
 		LogUtils.logError(baseException);
 
 		return ResponseEntity.status(baseException.getHttpStatus())
-			.body(ErrorResponse.builder()
-				.errorCode(baseException.getErrorCode().name())
-				.errorMessage(baseException.getErrorMessage())
-				.build());
+			.body(CommonResponse.from(baseException.getErrorCode()));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<List<ErrorResponse>> inputValidationExceptionHandler(BindingResult result) {
+	public ResponseEntity<CommonResponses<ValidationError>> inputValidationExceptionHandler(BindingResult result) {
 		log.error(result.getFieldErrors().toString());
 
+		List<ValidationError> validationErrors = result.getFieldErrors().stream()
+			.map(fieldError -> ValidationError.builder()
+				.field(fieldError.getField())
+				.message(fieldError.getDefaultMessage())
+				.code(fieldError.getCode())
+				.build())
+			.toList();
+
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(result.getFieldErrors().stream()
-				.map(e -> ErrorResponse.builder()
-					.errorCode(e.getCode())
-					.errorMessage(e.getDefaultMessage())
-					.build())
-				.toList());
+			.body(CommonResponses.of(false, HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다.",
+				validationErrors));
 	}
 
 }

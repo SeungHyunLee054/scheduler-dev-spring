@@ -3,6 +3,7 @@ package com.lsh.schedulerdev.domain.scheduler.exception;
 import org.springframework.http.HttpStatus;
 
 import com.lsh.schedulerdev.common.exception.BaseException;
+import com.lsh.schedulerdev.domain.scheduler.code.SchedulerExceptionCode;
 
 import lombok.Getter;
 
@@ -15,6 +16,6 @@ public class SchedulerException extends BaseException {
 	public SchedulerException(SchedulerExceptionCode errorCode) {
 		this.errorCode = errorCode;
 		this.httpStatus = errorCode.getHttpStatus();
-		this.errorMessage = errorCode.getErrorMessage();
+		this.errorMessage = errorCode.getMessage();
 	}
 }

@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ErrorResponse {
-	private String errorCode;
-	private String errorMessage;
+public class ValidationError {
+	private String field;
+	private String message;
+	private String code;
 }

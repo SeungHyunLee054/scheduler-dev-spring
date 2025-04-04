@@ -3,6 +3,7 @@ package com.lsh.schedulerdev.domain.comment.exception;
 import org.springframework.http.HttpStatus;
 
 import com.lsh.schedulerdev.common.exception.BaseException;
+import com.lsh.schedulerdev.domain.comment.code.CommentExceptionCode;
 
 import lombok.Getter;
 
@@ -14,7 +15,7 @@ public class CommentException extends BaseException {
 
 	public CommentException(CommentExceptionCode errorCode) {
 		this.errorCode = errorCode;
-		this.errorMessage = errorCode.getErrorMessage();
+		this.errorMessage = errorCode.getMessage();
 		this.httpStatus = errorCode.getHttpStatus();
 	}
 }

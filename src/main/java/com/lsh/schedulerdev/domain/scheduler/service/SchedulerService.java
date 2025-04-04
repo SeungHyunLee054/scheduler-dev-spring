@@ -8,12 +8,13 @@ import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
 import com.lsh.schedulerdev.domain.member.entity.Member;
 import com.lsh.schedulerdev.domain.member.service.MemberService;
+import com.lsh.schedulerdev.domain.scheduler.code.SchedulerExceptionCode;
+import com.lsh.schedulerdev.domain.scheduler.code.SchedulerSuccessCode;
 import com.lsh.schedulerdev.domain.scheduler.dto.request.SchedulerCreateDto;
 import com.lsh.schedulerdev.domain.scheduler.dto.request.SchedulerUpdateDto;
 import com.lsh.schedulerdev.domain.scheduler.dto.response.SchedulerDto;
 import com.lsh.schedulerdev.domain.scheduler.entity.Scheduler;
 import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerException;
-import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.schedulerdev.domain.scheduler.repository.SchedulerRepository;
 
 import jakarta.transaction.Transactional;
@@ -41,7 +42,7 @@ public class SchedulerService {
 			.content(schedulerCreateDto.getContent())
 			.build());
 
-		return CommonResponse.of("일정 생성 성공", SchedulerDto.from(scheduler));
+		return CommonResponse.from(SchedulerSuccessCode.SCHEDULER_CREATE_SUCCESS, SchedulerDto.from(scheduler));
 	}
 
 	/**
@@ -54,7 +55,7 @@ public class SchedulerService {
 			schedulerRepository.findAllByOrderByModifiedAtDesc(pageable)
 				.map(SchedulerDto::from);
 
-		return CommonResponses.from("모든 일정 조회 성공", schedulerDtoPage);
+		return CommonResponses.of(SchedulerSuccessCode.SCHEDULER_READ_ALL_SUCCESS, schedulerDtoPage);
 	}
 
 	/**
@@ -73,7 +74,7 @@ public class SchedulerService {
 
 		scheduler.updateScheduler(schedulerUpdateDto.getTitle(), schedulerUpdateDto.getContent());
 
-		return CommonResponse.of("일정 수정 성공", SchedulerDto.from(scheduler));
+		return CommonResponse.from(SchedulerSuccessCode.SCHEDULER_UPDATE_SUCCESS, SchedulerDto.from(scheduler));
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class SchedulerService {
 
 		schedulerRepository.delete(scheduler);
 
-		return CommonResponse.of("일정 삭제 성공", scheduler.getId());
+		return CommonResponse.from(SchedulerSuccessCode.SCHEDULER_DELETE_SUCCESS, scheduler.getId());
 	}
 
 	/**

@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.lsh.schedulerdev.common.audit.BaseEntity;
 import com.lsh.schedulerdev.domain.comment.entity.Comment;
+import com.lsh.schedulerdev.domain.member.code.MemberExceptionCode;
 import com.lsh.schedulerdev.domain.member.exception.MemberException;
-import com.lsh.schedulerdev.domain.member.exception.MemberExceptionCode;
 import com.lsh.schedulerdev.domain.member.service.PasswordEncoder;
 import com.lsh.schedulerdev.domain.scheduler.entity.Scheduler;
 

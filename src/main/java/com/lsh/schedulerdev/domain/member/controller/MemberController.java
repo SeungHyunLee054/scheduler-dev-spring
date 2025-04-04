@@ -17,6 +17,7 @@ import com.lsh.schedulerdev.common.constants.SessionConstants;
 import com.lsh.schedulerdev.common.constants.SessionExpiredConstant;
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
+import com.lsh.schedulerdev.domain.member.code.MemberSuccessCode;
 import com.lsh.schedulerdev.domain.member.dto.MemberAuthDto;
 import com.lsh.schedulerdev.domain.member.dto.request.MemberCreateDto;
 import com.lsh.schedulerdev.domain.member.dto.request.MemberSignInDto;
@@ -52,7 +53,7 @@ public class MemberController {
 		session.setAttribute(SessionConstants.AUTHORIZATION, memberAuthDto);
 		session.setMaxInactiveInterval(sessionExpiredConstant.getSessionExpiredTime());
 
-		return ResponseEntity.ok(CommonResponse.of("로그인 성공", session.getId()));
+		return ResponseEntity.ok(CommonResponse.from(MemberSuccessCode.MEMBER_SIGN_IN_SUCCESS, session.getId()));
 	}
 
 	@GetMapping

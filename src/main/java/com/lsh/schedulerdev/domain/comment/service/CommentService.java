@@ -6,12 +6,13 @@ import org.springframework.stereotype.Service;
 
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
+import com.lsh.schedulerdev.domain.comment.code.CommentExceptionCode;
+import com.lsh.schedulerdev.domain.comment.code.CommentSuccessCode;
 import com.lsh.schedulerdev.domain.comment.dto.request.CommentCreateDto;
 import com.lsh.schedulerdev.domain.comment.dto.request.CommentUpdateDto;
 import com.lsh.schedulerdev.domain.comment.dto.response.CommentDto;
 import com.lsh.schedulerdev.domain.comment.entity.Comment;
 import com.lsh.schedulerdev.domain.comment.exception.CommentException;
-import com.lsh.schedulerdev.domain.comment.exception.CommentExceptionCode;
 import com.lsh.schedulerdev.domain.comment.repository.CommentRepository;
 import com.lsh.schedulerdev.domain.member.entity.Member;
 import com.lsh.schedulerdev.domain.member.service.MemberService;
@@ -48,7 +49,8 @@ public class CommentService {
 
 		scheduler.plusCommentCount();
 
-		return CommonResponse.of("해당 일정에 댓글 생성 성공", CommentDto.from(comment));
+		return CommonResponse
+			.from(CommentSuccessCode.COMMENT_CREATE_SUCCESS, CommentDto.from(comment));
 	}
 
 	/**
@@ -62,7 +64,7 @@ public class CommentService {
 			commentRepository.findAllBySchedulerIdOrderByModifiedAtDesc(schedulerId, pageable)
 				.map(CommentDto::from);
 
-		return CommonResponses.from("해당 일정의 모든 댓글 조회 성공", commentDtoPage);
+		return CommonResponses.of(CommentSuccessCode.COMMENT_READ_ALL_SUCCESS, commentDtoPage);
 	}
 
 	/**
@@ -80,7 +82,7 @@ public class CommentService {
 
 		comment.updateContent(commentUpdateDto.getContent());
 
-		return CommonResponse.of("해당 일정의 해당 댓글 수정 성공", CommentDto.from(comment));
+		return CommonResponse.from(CommentSuccessCode.COMMENT_UPDATE_SUCCESS, CommentDto.from(comment));
 	}
 
 	/**
@@ -101,7 +103,7 @@ public class CommentService {
 
 		scheduler.minusCommentCount();
 
-		return CommonResponse.of("해당 일정의 해당 댓글 삭제 성공", comment.getId());
+		return CommonResponse.from(CommentSuccessCode.COMMENT_DELETE_SUCCESS, comment.getId());
 	}
 
 	/**

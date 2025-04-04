@@ -6,8 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lsh.schedulerdev.common.exception.dto.ErrorResponse;
 import com.lsh.schedulerdev.common.filter.exception.FilterException;
+import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.utils.LogUtils;
 
 import jakarta.servlet.FilterChain;
@@ -34,10 +34,11 @@ public class SessionExceptionFilter extends OncePerRequestFilter {
 			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 			response.setCharacterEncoding("UTF-8");
 			objectMapper.writeValue(response.getWriter(),
-				ErrorResponse.builder()
-					.errorCode(filterException.getErrorCode().name())
-					.errorMessage(filterException.getErrorMessage())
-					.build());
+				CommonResponse.from(filterException.getErrorCode()));
+			// ErrorResponse.builder()
+			// 	.errorCode(filterException.getErrorCode().name())
+			// 	.errorMessage(filterException.getErrorMessage())
+			// 	.build());
 		}
 
 	}

@@ -3,6 +3,7 @@ package com.lsh.schedulerdev.domain.member.exception;
 import org.springframework.http.HttpStatus;
 
 import com.lsh.schedulerdev.common.exception.BaseException;
+import com.lsh.schedulerdev.domain.member.code.MemberExceptionCode;
 
 import lombok.Getter;
 
@@ -15,6 +16,6 @@ public class MemberException extends BaseException {
 	public MemberException(MemberExceptionCode errorCode) {
 		this.errorCode = errorCode;
 		this.httpStatus = errorCode.getHttpStatus();
-		this.errorMessage = errorCode.getErrorMessage();
+		this.errorMessage = errorCode.getMessage();
 	}
 }

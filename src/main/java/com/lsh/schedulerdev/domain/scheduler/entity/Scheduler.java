@@ -5,8 +5,8 @@ import java.util.List;
 import com.lsh.schedulerdev.common.audit.BaseEntity;
 import com.lsh.schedulerdev.domain.comment.entity.Comment;
 import com.lsh.schedulerdev.domain.member.entity.Member;
+import com.lsh.schedulerdev.domain.scheduler.code.SchedulerExceptionCode;
 import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerException;
-import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerExceptionCode;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

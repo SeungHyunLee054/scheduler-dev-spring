@@ -14,7 +14,7 @@ public class FilterException extends BaseException {
 
 	public FilterException(FilterExceptionCode errorCode) {
 		this.errorCode = errorCode;
-		this.errorMessage = errorCode.getErrorMessage();
+		this.errorMessage = errorCode.getMessage();
 		this.httpStatus = errorCode.getHttpStatus();
 	}
 }

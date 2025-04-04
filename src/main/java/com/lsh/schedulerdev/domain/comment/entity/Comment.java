@@ -1,8 +1,8 @@
 package com.lsh.schedulerdev.domain.comment.entity;
 
 import com.lsh.schedulerdev.common.audit.BaseEntity;
+import com.lsh.schedulerdev.domain.comment.code.CommentExceptionCode;
 import com.lsh.schedulerdev.domain.comment.exception.CommentException;
-import com.lsh.schedulerdev.domain.comment.exception.CommentExceptionCode;
 import com.lsh.schedulerdev.domain.member.entity.Member;
 import com.lsh.schedulerdev.domain.scheduler.entity.Scheduler;
 
