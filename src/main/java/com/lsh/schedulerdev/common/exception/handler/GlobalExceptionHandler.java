@@ -13,6 +13,7 @@ import com.lsh.schedulerdev.common.exception.BaseException;
 import com.lsh.schedulerdev.common.exception.dto.ValidationError;
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
+import com.lsh.schedulerdev.common.response.ResponseCode;
 import com.lsh.schedulerdev.common.utils.LogUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	@ExceptionHandler(BaseException.class)
-	public ResponseEntity<CommonResponse<Object>> customExceptionHandler(BaseException baseException) {
+	public ResponseEntity<CommonResponse<ResponseCode>> customExceptionHandler(BaseException baseException) {
 		LogUtils.logError(baseException);
 
 		return ResponseEntity.status(baseException.getHttpStatus())
