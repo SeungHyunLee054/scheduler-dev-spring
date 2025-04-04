@@ -35,10 +35,6 @@ public class SessionExceptionFilter extends OncePerRequestFilter {
 			response.setCharacterEncoding("UTF-8");
 			objectMapper.writeValue(response.getWriter(),
 				CommonResponse.from(filterException.getErrorCode()));
-			// ErrorResponse.builder()
-			// 	.errorCode(filterException.getErrorCode().name())
-			// 	.errorMessage(filterException.getErrorMessage())
-			// 	.build());
 		}
 
 	}
