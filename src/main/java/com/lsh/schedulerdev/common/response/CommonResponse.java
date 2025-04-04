@@ -14,7 +14,7 @@ public class CommonResponse<T> {
 	private String message;
 	private T result;
 
-	public static <T> CommonResponse<T> from(ResponseCode responseCode, T result) {
+	public static <T> CommonResponse<T> of(ResponseCode responseCode, T result) {
 		return CommonResponse.<T>builder()
 			.success(responseCode.isSuccess())
 			.status(responseCode.getHttpStatus().value())

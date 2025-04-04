@@ -42,7 +42,7 @@ public class SchedulerService {
 			.content(schedulerCreateDto.getContent())
 			.build());
 
-		return CommonResponse.from(SchedulerSuccessCode.SCHEDULER_CREATE_SUCCESS, SchedulerDto.from(scheduler));
+		return CommonResponse.of(SchedulerSuccessCode.SCHEDULER_CREATE_SUCCESS, SchedulerDto.from(scheduler));
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class SchedulerService {
 
 		scheduler.updateScheduler(schedulerUpdateDto.getTitle(), schedulerUpdateDto.getContent());
 
-		return CommonResponse.from(SchedulerSuccessCode.SCHEDULER_UPDATE_SUCCESS, SchedulerDto.from(scheduler));
+		return CommonResponse.of(SchedulerSuccessCode.SCHEDULER_UPDATE_SUCCESS, SchedulerDto.from(scheduler));
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class SchedulerService {
 
 		schedulerRepository.delete(scheduler);
 
-		return CommonResponse.from(SchedulerSuccessCode.SCHEDULER_DELETE_SUCCESS, scheduler.getId());
+		return CommonResponse.of(SchedulerSuccessCode.SCHEDULER_DELETE_SUCCESS, scheduler.getId());
 	}
 
 	/**

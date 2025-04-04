@@ -50,7 +50,7 @@ public class CommentService {
 		scheduler.plusCommentCount();
 
 		return CommonResponse
-			.from(CommentSuccessCode.COMMENT_CREATE_SUCCESS, CommentDto.from(comment));
+			.of(CommentSuccessCode.COMMENT_CREATE_SUCCESS, CommentDto.from(comment));
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class CommentService {
 
 		comment.updateContent(commentUpdateDto.getContent());
 
-		return CommonResponse.from(CommentSuccessCode.COMMENT_UPDATE_SUCCESS, CommentDto.from(comment));
+		return CommonResponse.of(CommentSuccessCode.COMMENT_UPDATE_SUCCESS, CommentDto.from(comment));
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class CommentService {
 
 		scheduler.minusCommentCount();
 
-		return CommonResponse.from(CommentSuccessCode.COMMENT_DELETE_SUCCESS, comment.getId());
+		return CommonResponse.of(CommentSuccessCode.COMMENT_DELETE_SUCCESS, comment.getId());
 	}
 
 	/**

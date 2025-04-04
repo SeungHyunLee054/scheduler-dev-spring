@@ -53,7 +53,7 @@ public class MemberController {
 		session.setAttribute(SessionConstants.AUTHORIZATION, memberAuthDto);
 		session.setMaxInactiveInterval(sessionExpiredConstant.getSessionExpiredTime());
 
-		return ResponseEntity.ok(CommonResponse.from(MemberSuccessCode.MEMBER_SIGN_IN_SUCCESS, session.getId()));
+		return ResponseEntity.ok(CommonResponse.of(MemberSuccessCode.MEMBER_SIGN_IN_SUCCESS, session.getId()));
 	}
 
 	@GetMapping

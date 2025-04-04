@@ -46,7 +46,7 @@ public class MemberService {
 			.password(passwordEncoder.encode(memberCreateDto.getPassword()))
 			.build());
 
-		return CommonResponse.from(MemberSuccessCode.MEMBER_SIGN_UP_SUCCESS, MemberDto.from(savedMember));
+		return CommonResponse.of(MemberSuccessCode.MEMBER_SIGN_UP_SUCCESS, MemberDto.from(savedMember));
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class MemberService {
 
 		member.updateMember(memberUpdateDto.getName(), passwordEncoder.encode(memberUpdateDto.getPassword()));
 
-		return CommonResponse.from(MemberSuccessCode.MEMBER_UPDATE_SUCCESS, MemberDto.from(member));
+		return CommonResponse.of(MemberSuccessCode.MEMBER_UPDATE_SUCCESS, MemberDto.from(member));
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class MemberService {
 
 		memberRepository.delete(member);
 
-		return CommonResponse.from(MemberSuccessCode.MEMBER_DELETE_SUCCESS, member.getId());
+		return CommonResponse.of(MemberSuccessCode.MEMBER_DELETE_SUCCESS, member.getId());
 	}
 
 	/**
