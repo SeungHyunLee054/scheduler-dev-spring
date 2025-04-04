@@ -19,20 +19,21 @@ import org.springframework.data.domain.Pageable;
 
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
+import com.lsh.schedulerdev.domain.comment.code.CommentExceptionCode;
+import com.lsh.schedulerdev.domain.comment.code.CommentSuccessCode;
 import com.lsh.schedulerdev.domain.comment.dto.request.CommentCreateDto;
 import com.lsh.schedulerdev.domain.comment.dto.request.CommentUpdateDto;
 import com.lsh.schedulerdev.domain.comment.dto.response.CommentDto;
 import com.lsh.schedulerdev.domain.comment.entity.Comment;
 import com.lsh.schedulerdev.domain.comment.exception.CommentException;
-import com.lsh.schedulerdev.domain.comment.exception.CommentExceptionCode;
 import com.lsh.schedulerdev.domain.comment.repository.CommentRepository;
+import com.lsh.schedulerdev.domain.member.code.MemberExceptionCode;
 import com.lsh.schedulerdev.domain.member.entity.Member;
 import com.lsh.schedulerdev.domain.member.exception.MemberException;
-import com.lsh.schedulerdev.domain.member.exception.MemberExceptionCode;
 import com.lsh.schedulerdev.domain.member.service.MemberService;
+import com.lsh.schedulerdev.domain.scheduler.code.SchedulerExceptionCode;
 import com.lsh.schedulerdev.domain.scheduler.entity.Scheduler;
 import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerException;
-import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.schedulerdev.domain.scheduler.service.SchedulerService;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,6 +91,9 @@ class CommentServiceTest {
 		verify(commentRepository, times(1)).save(any());
 
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(CommentSuccessCode.COMMENT_CREATE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(CommentSuccessCode.COMMENT_CREATE_SUCCESS.getHttpStatus().value(), response.getStatus()),
 			() -> assertEquals(comment.getId(), response.getResult().getCommentId()),
 			() -> assertEquals(commentCreateDto.getContent(), response.getResult().getContent())
 		);
@@ -147,6 +151,10 @@ class CommentServiceTest {
 		List<CommentDto> result = responses.getResult();
 		for (CommentDto commentDto : result) {
 			assertAll(
+				() -> assertTrue(responses.isSuccess()),
+				() -> assertEquals(CommentSuccessCode.COMMENT_READ_ALL_SUCCESS.getMessage(), responses.getMessage()),
+				() -> assertEquals(CommentSuccessCode.COMMENT_READ_ALL_SUCCESS.getHttpStatus().value(),
+					responses.getStatus()),
 				() -> assertEquals(comment.getId(), commentDto.getCommentId()),
 				() -> assertEquals(comment.getContent(), commentDto.getContent())
 			);
@@ -172,6 +180,9 @@ class CommentServiceTest {
 
 		// Then
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(CommentSuccessCode.COMMENT_UPDATE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(CommentSuccessCode.COMMENT_UPDATE_SUCCESS.getHttpStatus().value(), response.getStatus()),
 			() -> assertEquals(commentUpdateDto.getContent(), response.getResult().getContent())
 		);
 
@@ -235,6 +246,9 @@ class CommentServiceTest {
 		verify(commentRepository, times(1)).findById(anyLong());
 
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(CommentSuccessCode.COMMENT_DELETE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(CommentSuccessCode.COMMENT_DELETE_SUCCESS.getHttpStatus().value(), response.getStatus()),
 			() -> assertEquals(comment.getId(), response.getResult())
 		);
 
@@ -263,21 +277,5 @@ class CommentServiceTest {
 		assertEquals(CommentExceptionCode.USER_MISMATCH, exception.getErrorCode());
 
 	}
-
-	// @Test
-	// @DisplayName("댓글 삭제 실패 - 일정을 찾을 수 없음")
-	// void fail_deleteComment_schedulerNotFound() {
-	// 	// Given
-	// 	given(schedulerDomainService.findById(anyLong()))
-	// 		.willThrow(new SchedulerException(SchedulerExceptionCode.SCHEDULER_NOT_FOUND));
-	//
-	// 	// When
-	// 	SchedulerException exception = assertThrows(SchedulerException.class,
-	// 		() -> commentService.deleteComment(1L, 1L));
-	//
-	// 	// Then
-	// 	assertEquals(SchedulerExceptionCode.SCHEDULER_NOT_FOUND, exception.getErrorCode());
-	//
-	// }
 
 }

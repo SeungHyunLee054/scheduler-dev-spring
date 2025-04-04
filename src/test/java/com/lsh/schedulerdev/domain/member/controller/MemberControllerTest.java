@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -106,6 +107,10 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isCreated(),
+				jsonPath("$.success")
+					.value(responseDto.isSuccess()),
+				jsonPath("$.status")
+					.value(responseDto.getStatus()),
 				jsonPath("$.message")
 					.value(responseDto.getMessage()),
 				jsonPath("$.result.memberId")
@@ -134,8 +139,12 @@ class MemberControllerTest {
 		when(memberAuthDto.getEmail())
 			.thenReturn("test@test");
 
+		when(responseDto.isSuccess())
+			.thenReturn(true);
 		when(responseDto.getMessage())
 			.thenReturn("로그인 성공");
+		when(responseDto.getStatus())
+			.thenReturn(HttpStatus.OK.value());
 
 		when(memberService.signIn(any()))
 			.thenReturn(memberAuthDto);
@@ -150,6 +159,10 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
+				jsonPath("$.success")
+					.value(responseDto.isSuccess()),
+				jsonPath("$.status")
+					.value(responseDto.getStatus()),
 				jsonPath("$.message")
 					.value(responseDto.getMessage()),
 				jsonPath("$.result")
@@ -188,6 +201,10 @@ class MemberControllerTest {
 			perform.andDo(print())
 				.andExpectAll(
 					status().isOk(),
+					jsonPath("$.success")
+						.value(responseDto.isSuccess()),
+					jsonPath("$.status")
+						.value(responseDto.getStatus()),
 					jsonPath("$.message")
 						.value(responses.getMessage()),
 					jsonPath("$.result.[" + i + "].memberId")
@@ -238,6 +255,10 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
+				jsonPath("$.success")
+					.value(responseDto.isSuccess()),
+				jsonPath("$.status")
+					.value(responseDto.getStatus()),
 				jsonPath("$.message")
 					.value(responseDto.getMessage()),
 				jsonPath("$.result.memberId")
@@ -279,6 +300,10 @@ class MemberControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
+				jsonPath("$.success")
+					.value(responseDto.isSuccess()),
+				jsonPath("$.status")
+					.value(responseDto.getStatus()),
 				jsonPath("$.message")
 					.value(responseLong.getMessage()),
 				jsonPath("$.result")

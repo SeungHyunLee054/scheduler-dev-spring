@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
+import com.lsh.schedulerdev.domain.member.code.MemberExceptionCode;
+import com.lsh.schedulerdev.domain.member.code.MemberSuccessCode;
 import com.lsh.schedulerdev.domain.member.dto.MemberAuthDto;
 import com.lsh.schedulerdev.domain.member.dto.request.MemberCreateDto;
 import com.lsh.schedulerdev.domain.member.dto.request.MemberSignInDto;
@@ -26,7 +28,6 @@ import com.lsh.schedulerdev.domain.member.dto.request.MemberUpdateDto;
 import com.lsh.schedulerdev.domain.member.dto.response.MemberDto;
 import com.lsh.schedulerdev.domain.member.entity.Member;
 import com.lsh.schedulerdev.domain.member.exception.MemberException;
-import com.lsh.schedulerdev.domain.member.exception.MemberExceptionCode;
 import com.lsh.schedulerdev.domain.member.repository.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,6 +80,9 @@ class MemberServiceTest {
 		// Then
 		verify(memberRepository, times(1)).save(any());
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(MemberSuccessCode.MEMBER_SIGN_UP_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(MemberSuccessCode.MEMBER_SIGN_UP_SUCCESS.getHttpStatus().value(), response.getStatus()),
 			() -> assertEquals(1L, response.getResult().getMemberId()),
 			() -> assertEquals("test", response.getResult().getName()),
 			() -> assertEquals("test@test", response.getResult().getEmail())
@@ -160,6 +164,10 @@ class MemberServiceTest {
 		List<MemberDto> result = responses.getResult();
 		for (MemberDto memberDto : result) {
 			assertAll(
+				() -> assertTrue(responses.isSuccess()),
+				() -> assertEquals(MemberSuccessCode.MEMBER_READ_ALL_SUCCESS.getMessage(), responses.getMessage()),
+				() -> assertEquals(MemberSuccessCode.MEMBER_READ_ALL_SUCCESS.getHttpStatus().value(),
+					responses.getStatus()),
 				() -> assertEquals(memberDto.getMemberId(), member.getId()),
 				() -> assertEquals(memberDto.getEmail(), member.getEmail()),
 				() -> assertEquals(memberDto.getName(), member.getName())
@@ -190,6 +198,9 @@ class MemberServiceTest {
 
 		// Then
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(MemberSuccessCode.MEMBER_UPDATE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(MemberSuccessCode.MEMBER_UPDATE_SUCCESS.getHttpStatus().value(), response.getStatus()),
 			() -> assertEquals(1L, response.getResult().getMemberId()),
 			() -> assertEquals("test2", response.getResult().getName())
 		);
@@ -227,6 +238,9 @@ class MemberServiceTest {
 
 		// Then
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(MemberSuccessCode.MEMBER_DELETE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(MemberSuccessCode.MEMBER_DELETE_SUCCESS.getHttpStatus().value(), response.getStatus()),
 			() -> assertEquals(response.getResult(), member.getId())
 		);
 

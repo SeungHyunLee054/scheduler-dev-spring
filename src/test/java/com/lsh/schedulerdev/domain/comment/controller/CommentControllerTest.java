@@ -88,6 +88,10 @@ class CommentControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isCreated(),
+				jsonPath("$.success")
+					.value(responseDto.isSuccess()),
+				jsonPath("$.status")
+					.value(responseDto.getStatus()),
 				jsonPath("$.message")
 					.value(responseDto.getMessage()),
 				jsonPath("$.result.commentId")
@@ -128,6 +132,10 @@ class CommentControllerTest {
 			perform.andDo(print())
 				.andExpectAll(
 					status().isOk(),
+					jsonPath("$.success")
+						.value(responseDto.isSuccess()),
+					jsonPath("$.status")
+						.value(responseDto.getStatus()),
 					jsonPath("$.message")
 						.value(responses.getMessage()),
 					jsonPath("$.result.[" + i + "].commentId")
@@ -164,6 +172,10 @@ class CommentControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
+				jsonPath("$.success")
+					.value(responseDto.isSuccess()),
+				jsonPath("$.status")
+					.value(responseDto.getStatus()),
 				jsonPath("$.message")
 					.value(responseDto.getMessage()),
 				jsonPath("$.result.content")
@@ -195,6 +207,10 @@ class CommentControllerTest {
 		perform.andDo(print())
 			.andExpectAll(
 				status().isOk(),
+				jsonPath("$.success")
+					.value(responseDto.isSuccess()),
+				jsonPath("$.status")
+					.value(responseDto.getStatus()),
 				jsonPath("$.message")
 					.value(responseLong.getMessage()),
 				jsonPath("$.result")

@@ -19,16 +19,17 @@ import org.springframework.data.domain.Pageable;
 
 import com.lsh.schedulerdev.common.response.CommonResponse;
 import com.lsh.schedulerdev.common.response.CommonResponses;
+import com.lsh.schedulerdev.domain.member.code.MemberExceptionCode;
 import com.lsh.schedulerdev.domain.member.entity.Member;
 import com.lsh.schedulerdev.domain.member.exception.MemberException;
-import com.lsh.schedulerdev.domain.member.exception.MemberExceptionCode;
 import com.lsh.schedulerdev.domain.member.service.MemberService;
+import com.lsh.schedulerdev.domain.scheduler.code.SchedulerExceptionCode;
+import com.lsh.schedulerdev.domain.scheduler.code.SchedulerSuccessCode;
 import com.lsh.schedulerdev.domain.scheduler.dto.request.SchedulerCreateDto;
 import com.lsh.schedulerdev.domain.scheduler.dto.request.SchedulerUpdateDto;
 import com.lsh.schedulerdev.domain.scheduler.dto.response.SchedulerDto;
 import com.lsh.schedulerdev.domain.scheduler.entity.Scheduler;
 import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerException;
-import com.lsh.schedulerdev.domain.scheduler.exception.SchedulerExceptionCode;
 import com.lsh.schedulerdev.domain.scheduler.repository.SchedulerRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,6 +81,10 @@ class SchedulerServiceTest {
 		verify(memberService, times(1)).findById(anyLong());
 		verify(schedulerRepository, times(1)).save(any());
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(SchedulerSuccessCode.SCHEDULER_CREATE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(SchedulerSuccessCode.SCHEDULER_CREATE_SUCCESS.getHttpStatus().value(),
+				response.getStatus()),
 			() -> assertEquals("test", response.getResult().getTitle()),
 			() -> assertEquals("test", response.getResult().getContent())
 		);
@@ -119,6 +124,11 @@ class SchedulerServiceTest {
 		List<SchedulerDto> result = responses.getResult();
 		for (SchedulerDto schedulerDto : result) {
 			assertAll(
+				() -> assertTrue(responses.isSuccess()),
+				() -> assertEquals(SchedulerSuccessCode.SCHEDULER_READ_ALL_SUCCESS.getMessage(),
+					responses.getMessage()),
+				() -> assertEquals(SchedulerSuccessCode.SCHEDULER_READ_ALL_SUCCESS.getHttpStatus().value(),
+					responses.getStatus()),
 				() -> assertEquals(schedulerDto.getSchedulerId(), scheduler.getId()),
 				() -> assertEquals(schedulerDto.getTitle(), scheduler.getTitle()),
 				() -> assertEquals(schedulerDto.getContent(), scheduler.getContent())
@@ -149,6 +159,10 @@ class SchedulerServiceTest {
 
 		// Then
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(SchedulerSuccessCode.SCHEDULER_UPDATE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(SchedulerSuccessCode.SCHEDULER_UPDATE_SUCCESS.getHttpStatus().value(),
+				response.getStatus()),
 			() -> assertEquals(response.getResult().getTitle(), schedulerUpdateDto.getTitle()),
 			() -> assertEquals(response.getResult().getContent(), schedulerUpdateDto.getContent())
 		);
@@ -212,6 +226,10 @@ class SchedulerServiceTest {
 
 		// Then
 		assertAll(
+			() -> assertTrue(response.isSuccess()),
+			() -> assertEquals(SchedulerSuccessCode.SCHEDULER_DELETE_SUCCESS.getMessage(), response.getMessage()),
+			() -> assertEquals(SchedulerSuccessCode.SCHEDULER_DELETE_SUCCESS.getHttpStatus().value(),
+				response.getStatus()),
 			() -> assertEquals(scheduler.getId(), response.getResult())
 		);
 
